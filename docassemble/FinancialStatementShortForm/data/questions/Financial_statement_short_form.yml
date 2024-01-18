@@ -86,11 +86,11 @@ objects:
   - other_incomes: ALIncomeList.using(complete_attribute='complete')
   - expenses: ALExpenseList.using(complete_attribute='complete')
   - assets: ALAssetList.using(complete_attribute='complete')
-  - all_real_estate: DAList.using(object_type=DAObject, complete_attribute='market_value')
-  - motor_vehicles: DAList.using(object_type=DAObject, complete_attribute='market_value')
-  - retirement_accounts: DAList.using(object_type=DAObject, complete_attribute='value')
-  - money_accounts: DAList.using(object_type=DAObject, complete_attribute='value')
-  - other_assets: DAList.using(object_type=DAObject, complete_attribute='value')
+  - all_real_estate: ALAssetList.using(complete_attribute='market_value')
+  - motor_vehicles: ALAssetList.using(complete_attribute='market_value')
+  - retirement_accounts: ALAssetList.using(complete_attribute='market_value')
+  - money_accounts: ALAssetList.using(complete_attribute='market_value')
+  - other_assets: ALAssetList.using(complete_attribute='market_value')
 ---
 sections:
   - review_Financial_statement_short_form: Review your answers
@@ -142,30 +142,29 @@ code: |
   jobs.gather()
   review_jobs
   
-  #credit_union_loan_repayment
-  #
-  #claiming_federal_tax_exemptions
-  #years_paid_ss
-  #
-  #set_progress(44)
-  #
-  #other_incomes.gathered
-  #review_other_incomes
-  #
-  #expenses.gathered
-  #review_expenses
-  #  
-  #set_progress(55)
-  #creditors.gather()
-  #
-  #all_real_estate.gather()
-  #motor_vehicles.gather()
-  #money_accounts.gather()
-  #retirement_accounts.gather()
-  #tax_deferred_annuity_plans
-  #other_assets.gather()
+  credit_union_loan_repayment
   
-  #set_progress(66)
+  claiming_federal_tax_exemptions
+  years_paid_ss
+  
+  set_progress(44)
+  
+  other_incomes.gathered
+  review_other_incomes
+  
+  expenses.gathered
+  review_expenses
+    
+  set_progress(55)
+  creditors.gather()
+  
+  all_real_estate.gather()
+  motor_vehicles.gather()
+  money_accounts.gather()
+  retirement_accounts.gather()
+  tax_deferred_annuity_plans
+  other_assets.gather()
+  set_progress(66)
   interview_order_Financial_statement_short_form = True
 ---
 ###################### Main order ######################
@@ -795,17 +794,17 @@ attachments:
       - "assets_real_estate_address": ${ all_real_estate[0].address  }
       - "assets_real_estate_name_on_title": ${ all_real_estate[0].title_holders }
       - "assets_real_estate_fair_market_value": ${ currency(all_real_estate[0].market_value) }
-      - "assets_real_estate_mortgage_value": ${ currency(all_real_estate[0].mortgage) }
-      - "assets_real_estate_equity_value": ${ currency(all_real_estate[0].market_value - all_real_estate[0].mortgage) }
+      - "assets_real_estate_mortgage_value": ${ currency(all_real_estate[0].balance) }
+      - "assets_real_estate_equity_value": ${ currency(all_real_estate[0].equity()) }
       - "assets_motor_vehicle_fair_market_value": ${ currency(motor_vehicles[0].market_value) }
-      - "assets_motor_vehicle_loan_amount": ${ currency(motor_vehicles[0].loans) }
-      - "assets_motor_vehicle_equity_value": ${ currency(motor_vehicles[0].market_value - motor_vehicles[0].loans) }
+      - "assets_motor_vehicle_loan_amount": ${ currency(motor_vehicles[0].balance) }
+      - "assets_motor_vehicle_equity_value": ${ currency(motor_vehicles[0].equity()) }
       - "assets_motor_vehicle1_fair_market_value": ${ currency(motor_vehicles[1].market_value) }
-      - "assets_motor_vehicle1_loan_amount": ${ currency(motor_vehicles[1].loans) }
-      - "assets_motor_vehicle1_equity_value": ${ currency(motor_vehicles[1].market_value - motor_vehicles[1].loans) }
-      - "assets_retirement_plan_value": ${ currency(retirement_accounts[0].value) }
-      - "assets_retirement_plan1_value": ${ currency(retirement_accounts[1].value) }
-      - "assets_retirement_plan2_value": ${ currency(retirement_accounts[2].value) }
+      - "assets_motor_vehicle1_loan_amount": ${ currency(motor_vehicles[1].balance) }
+      - "assets_motor_vehicle1_equity_value": ${ currency(motor_vehicles[1].equity()) }
+      - "assets_retirement_plan_value": ${ currency(retirement_accounts[0].market_value) }
+      - "assets_retirement_plan1_value": ${ currency(retirement_accounts[1].market_value) }
+      - "assets_retirement_plan2_value": ${ currency(retirement_accounts[2].market_value) }
       - "assets_retirement_plan_name_and_account_number": |
           % for retirement_account in retirement_accounts: 
           ${ retirement_account.name } ${ retirement_account.account_number }
@@ -814,19 +813,19 @@ attachments:
       - "assets_life_insurance": ${ currency(life_insurance_value) }
       - "assets_account_name_and_number": |
           ${ money_accounts[0].name } ${ money_accounts[0].account_number }
-      - "assets_account_value": ${ currency(money_accounts[0].value) }
+      - "assets_account_value": ${ currency(money_accounts[0].market_value) }
       - "assets_account_name_and_number1": |
           ${ money_accounts[1].name } ${ money_accounts[1].account_number }
-      - "assets_account_value1": ${ currency(money_accounts[1].value) }
+      - "assets_account_value1": ${ currency(money_accounts[1].market_value) }
       - "assets_account_name_and_number2": |
           ${ money_accounts[2].name } ${ money_accounts[2].account_number }
-      - "assets_account_value2": ${ currency(money_accounts[2].value) }
+      - "assets_account_value2": ${ currency(money_accounts[2].market_value) }
       - "assets_stocks_and_bonds": ${ other_assets[0].name }
-      - "assets_stocks_and_bonds_value": ${ currency(other_assets[0].value) }
+      - "assets_stocks_and_bonds_value": ${ currency(other_assets[0].market_value) }
       - "assets_stocks_and_bonds1": ${ other_assets[1].name }
-      - "assets_stocks_and_bonds_value1": ${ currency(other_assets[1].value) }
+      - "assets_stocks_and_bonds_value1": ${ currency(other_assets[1].market_value) }
       - "total_assets_value": |
-          ${ currency(safe_sum_assets()) }
+          ${ currency(all_real_estate.equity() + motor_vehicles.equity() + retirement_accounts.market_value() + money_accounts.market_value() + (tax_deferred_annuity_plans_value if tax_deferred_annuity_plans else 0) + (life_insurance_value if life_insurance else 0)) }
       - "attorney_signature_date": ${ attorney_signature_date }
       - "attorney_bbo_number": ${ attorney_bbo_number }
 ---
@@ -855,7 +854,7 @@ code: |
     #  total += sum([(real_estate.market_value - real_estate.mortgage) for real_estate in all_real_estate])
     #
     #if len(motor_vehicles.complete_elements()) > 0:
-    #  total += sum([(motor_vehicle.market_value - motor_vehicle.loans) for motor_vehicle in motor_vehicles])
+    #  total += sum([(motor_vehicle.market_value - motor_vehicle.balance) for motor_vehicle in motor_vehicles])
     #
     #if len(retirement_accounts.complete_elements()) > 0:
     #  total += sum([(retirement_account.value) for retirement_account in retirement_accounts])

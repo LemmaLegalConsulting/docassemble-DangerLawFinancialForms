@@ -1,4 +1,5 @@
 ---
+only sets: x.complete
 generic object: ALItemizedJob
 code: |
   x.source
@@ -15,7 +16,8 @@ code: |
     x.to_add["self employment"].exists = True
     x.is_hourly = None
     x.is_part_time = False
-  else: 
+  else:
+    x.to_add["self employment"].exists = False
     x.times_per_year
     if x.is_part_time:
       x.to_add["part time"].is_hourly = x.is_hourly
@@ -398,7 +400,7 @@ fields:
   - Address of property: all_real_estate[i].address 
   - Current fair market value: all_real_estate[i].market_value
     datatype: currency
-  - Current outstanding mortgage value(s): all_real_estate[i].mortgage
+  - Current outstanding mortgage value(s): all_real_estate[i].balance
     datatype: currency
   - Do you own any other properties?: all_real_estate.there_is_another
     datatype: yesnoradio
@@ -417,7 +419,7 @@ question: |
 fields:
   - Current fair market value: motor_vehicles[i].market_value
     datatype: currency
-  - Current outstanding loan value(s): motor_vehicles[i].loans
+  - Current outstanding loan value(s): motor_vehicles[i].balance
     datatype: currency
   - Do you own any other motor vehicles?: motor_vehicles.there_is_another
     datatype: yesnoradio
@@ -437,7 +439,7 @@ question: |
 fields:
   - Financial Institution or Plan Name: retirement_accounts[i].name 
   - Account Number: retirement_accounts[i].account_number
-  - Current value: retirement_accounts[i].value
+  - Current value: retirement_accounts[i].market_value
     datatype: currency
   - Do you have any other retirement accounts?: retirement_accounts.there_is_another
     datatype: yesnoradio
@@ -457,7 +459,7 @@ question: |
 fields:
   - Financial Institution or Plan Name: money_accounts[i].name 
   - Account Number: money_accounts[i].account_number
-  - Current value: money_accounts[i].value
+  - Current value: money_accounts[i].market_value
     datatype: currency
   - Do you have any other money accounts?: money_accounts.there_is_another
     datatype: yesnoradio
@@ -491,7 +493,7 @@ question: |
   About your ${ ordinal(i) } other asset
 fields:
   - Type/Name: other_assets[i].name 
-  - Current value: other_assets[i].value
+  - Current value: other_assets[i].market_value
     datatype: currency
   - Do you have any other assets?: other_assets.there_is_another
     datatype: yesnoradio
