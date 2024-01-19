@@ -87,6 +87,8 @@ objects:
   - retirement_accounts: ALAssetList.using(complete_attribute='market_value')
   - money_accounts: ALAssetList.using(complete_attribute='market_value')
   - other_assets: ALAssetList.using(complete_attribute='market_value')
+  - tax_deferred_annuity_plans: ALAssetList.using(complete_attribute='market_value')
+  - life_insurance_plans: ALAssetList.using(complete_attribute='market_value')
 ---
 sections:
   - review_Financial_statement_short_form: Review your answers
@@ -138,8 +140,6 @@ code: |
   jobs.gather()
   review_jobs
   
-  credit_union_loan_repayment
-  
   claiming_federal_tax_exemptions
   years_paid_ss
   
@@ -158,7 +158,8 @@ code: |
   motor_vehicles.gather()
   money_accounts.gather()
   retirement_accounts.gather()
-  tax_deferred_annuity_plans
+  life_insurance_plans.gather()
+  tax_deferred_annuity_plans.gather()
   other_assets.gather()
   set_progress(66)
   interview_order_Financial_statement_short_form = True
@@ -188,7 +189,7 @@ sets:
   - other_parties[0].name.suffix
 id: names of opposing parties
 question: |
-  % if user_started_case:
+  % if user_ask_role:
   Name of **defendant** in this
   matter
   % else:
@@ -276,23 +277,6 @@ fields:
       - Schedules B and D excess
     show if: claiming_state_tax_exemptions
     required: False
----
-sets:
-  - other_parties[i].name.first
-  - other_parties[i].name.last
-  - other_parties[i].name.middle
-  - other_parties[i].name.suffix
-id: names of opposing parties
-question: |
-  % if user_started_case:
-  Name of ${ ordinal(i) } **defendant** in this
-  matter
-  % else:
-  Name of ${ ordinal(i) } **plaintiff** in this matter
-  % endif
-fields:
-  - code: |
-      other_parties[i].name_fields(person_or_business='person')
 ---
 comment: |
   This question is used to introduce your interview. Please customize
@@ -749,16 +733,16 @@ attachments:
       - "deductions_total_amount": ${ currency(jobs.deduction_total(times_per_year=52), symbol='') }
       - "adjusted_net_weekly_income_amount": |
           ${ currency((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52), symbol='') }
-      - "deduction_loan_repayment_yes": ${ credit_union_loan_repayment }
-      - "deduction_savings_yes": ${ credit_union_savings_account }
-      - "deductions_credit_union_loan_savings_amount": ${ currency(credit_union_loan_repayment_value, symbol='') }
-      - "deductions_savings_amount": ${ currency(credit_union_savings_account_value, symbol='') }
-      - "deductions_retirement_amount": ${ currency(retirement_account_value, symbol='') }
-      - "other_deductions_specifics": ${ other_account_deduction_explain }
-      - "deductions_child_support_compensation_401k_etc_amount": ${ currency(other_account_deduction_value, symbol='') }
-      - "other_deductions_total_amount": ${ currency(credit_union_loan_repayment_value + credit_union_savings_account_value + retirement_account_value + other_account_deduction_value, symbol='') }
+      - "deduction_loan_repayment_yes": ${ True if jobs.deduction_total(source=['credit_union_loan_repayment']) else False }
+      - "deduction_savings_yes": ${ True if jobs.deduction_total(source=['credit_union_savings_account']) else False }
+      - "deductions_credit_union_loan_savings_amount": ${ currency(jobs.deduction_total(source=['credit_union_loan_repayment']) + jobs.deduction_total(source=['credit_union_savings_account']), symbol='') }
+      - "deductions_savings_amount": ${ currency(jobs.deduction_total(source=['savings_account']), symbol='') }
+      - "deductions_retirement_amount": ${ currency(jobs.deduction_total(source=['retirement_account']), symbol='') }
+      - "other_deductions_specifics": ${ jobs.to_subtract['other_account_deduction'].explain }
+      - "deductions_child_support_compensation_401k_etc_amount": ${ currency(jobs.deduction_total(source=['other_account_deduction']), symbol='') }
+      - "other_deductions_total_amount": ${ currency(jobs.deduction_total(source=['other_account_deduction', 'credit_union_loan_repayment', 'credit_union_savings_account', 'savings_account', 'retirement_account']), symbol='') }
       - "net_weekly_income_amount": | 
-          ${ currency(((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52)) - (credit_union_loan_repayment_value + credit_union_savings_account_value + retirement_account_value + other_account_deduction_value), symbol='') }
+          ${ currency((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52) - jobs.deduction_total(source=['other_account_deduction', 'credit_union_loan_repayment', 'credit_union_savings_account', 'savings_account', 'retirement_account']), symbol='') }
       - "gross_yearly_income_last_year_amount": ${ currency(gross_annual_income, symbol='') }
       - "years_paid_into_social_security": ${ years_paid_ss }
       - "expense_life_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='life insurance'), symbol='') }
@@ -805,8 +789,8 @@ attachments:
           % for retirement_account in retirement_accounts: 
           ${ retirement_account.name } ${ retirement_account.account_number }
           % endfor
-      - "assets_tax_deferred_annuity_plan_value": ${ currency(tax_deferred_annuity_plans_value, symbol='') }
-      - "assets_life_insurance": ${ currency(life_insurance_value, symbol='') }
+      - "assets_tax_deferred_annuity_plan_value": ${ currency(tax_deferred_annuity_plans.market_value(), symbol='') }
+      - "assets_life_insurance": ${ currency(life_insurance_plans.market_value(), symbol='') }
       - "assets_account_name_and_number": |
           ${ money_accounts[0].name } ${ money_accounts[0].account_number }
       - "assets_account_value": ${ currency(money_accounts[0].market_value, symbol='') }
@@ -821,42 +805,7 @@ attachments:
       - "assets_stocks_and_bonds1": ${ other_assets[1].name }
       - "assets_stocks_and_bonds_value1": ${ currency(other_assets[1].market_value, symbol='') }
       - "total_assets_value": |
-          ${ currency(all_real_estate.equity() + motor_vehicles.equity() + retirement_accounts.market_value() + money_accounts.market_value() + (tax_deferred_annuity_plans_value if tax_deferred_annuity_plans else 0) + (life_insurance_value if life_insurance else 0), symbol='') }
+          ${ currency(all_real_estate.equity() + motor_vehicles.equity() + retirement_accounts.market_value() + money_accounts.market_value() + tax_deferred_annuity_plans.market_value() + life_insurance_plans.market_value(), symbol='') }
       - "attorney_signature_date": ${ attorney_signature_date }
       - "attorney_bbo_number": ${ attorney_bbo_number }
 ---
-## for total_assets_value
-code: |
-  def safe_sum_assets():
-    total = 0
-    
-    if defined("tax_deferred_annuity_plans_value"):
-      total += tax_deferred_annuity_plans_value
-      
-    log( 0, "console" )
-  
-    return total
----
-    #log(total, "console")
-    #log(defined("tax_deferred_annuity_plans_value"), "console")
-    #log(tax_deferred_annuity_plans_value, "console")
-    #
-
-    #
-    #if defined(life_insurance_value):
-    #  total += life_insurance_value
-    #  
-    #if len(all_real_estate.complete_elements()) > 0:
-    #  total += sum([(real_estate.market_value - real_estate.mortgage) for real_estate in all_real_estate])
-    #
-    #if len(motor_vehicles.complete_elements()) > 0:
-    #  total += sum([(motor_vehicle.market_value - motor_vehicle.balance) for motor_vehicle in motor_vehicles])
-    #
-    #if len(retirement_accounts.complete_elements()) > 0:
-    #  total += sum([(retirement_account.value) for retirement_account in retirement_accounts])
-    #
-    #if len(money_accounts.complete_elements()) > 0:
-    #  total += sum([(money_account.value) for money_account in money_accounts])
-    #
-    #if len(other_assets.complete_elements()) > 0:
-    #  total += sum([(other_asset.value) for other_asset in other_assets])

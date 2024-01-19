@@ -1,4 +1,8 @@
+###
+### A file that includes customized versions of al_income questions
+###
 ---
+### for jobs
 only sets: x.complete
 generic object: ALItemizedJob
 code: |
@@ -30,6 +34,11 @@ code: |
 ---
 generic object: ALItemizedJob 
 code: |
+  x.to_subtract.there_are_any = True
+  x.to_subtract.there_is_another = False
+---
+generic object: ALItemizedJob 
+code: |
   x.to_subtract.initializeObject("federal_taxes")
   x.to_subtract["federal_taxes"].exists = True
   x.to_subtract.initializeObject("state_taxes")
@@ -48,10 +57,6 @@ code: |
     x.to_subtract[i].value
   x.to_subtract[i].complete = True
 ---
-generic object: ALItemizedJob 
-code: | 
-  x.to_subtract.there_are_any = True
---- 
 sets:
   - x.employer.name.first
 id: employer
@@ -122,6 +127,7 @@ generic object: ALItemizedJob
 code: |
   x.to_subtract["state_taxes"].exists = True
 ---
+if: x.is_self_employed
 id: self employed collect
 generic object: ALItemizedJob
 question: |
@@ -218,46 +224,42 @@ fields:
     datatype: currency
     required: False
     show if: x.to_subtract['union_dues'].exists
-  - The job has other deductions: x.to_subtract.there_is_another
+  - I have a credit union loan repayment: x.to_subtract['credit_union_loan_repayment'].exists
     datatype: yesno
+  - What is your credit union loan repayment deduction amount?: x.to_subtract['credit_union_loan_repayment'].value
+    datatype: currency
+    required: False
+    show if: x.to_subtract['credit_union_loan_repayment'].exists
+  - I have a credit union savings account: x.to_subtract['credit_union_savings_account'].exists 
+    datatype: yesno
+  - What is your credit union savings deduction amount?: x.to_subtract['credit_union_savings_account'].value
+    datatype: currency
+    required: False
+    show if: x.to_subtract['credit_union_savings_account'].exists
+  - I have a savings account: x.to_subtract['savings_account'].exists
+    datatype: yesno
+  - What is your savings account deduction amount?: x.to_subtract['savings_account'].value
+    datatype: currency
+    required: False
+    show if: x.to_subtract['savings_account'].exists
+  - I have a retirement account: x.to_subtract['retirement_account'].exists
+    datatype: yesno
+  - What is your retirement account deduction amount?: x.to_subtract['retirement_account'].value
+    datatype: currency
+    required: False
+    show if: x.to_subtract['retirement_account'].exists
+  - I have another deduction (i.e. Child Support, Deferred Compensation or 401K): x.to_subtract['other_account_deduction'].exists
+    datatype: yesno
+  - Explain: x.to_subtract['other_account_deduction'].explain
+    required: False
+    show if: x.to_subtract['other_account_deduction'].exists
+  - What is your other deduction amount?: x.to_subtract['other_account_deduction'].value
+    datatype: currency
+    required: False
+    show if: x.to_subtract['other_account_deduction'].exists
 ---
-id: other deductions
-question: |
-  Other deductions
-fields:
-  - I have a credit union loan repayment: credit_union_loan_repayment
-    datatype: yesno
-  - What is your credit union loan repayment deduction amount?: credit_union_loan_repayment_value
-    datatype: currency
-    required: False
-    show if: credit_union_loan_repayment
-  - I have a credit union savings account: credit_union_savings_account
-    datatype: yesno
-  - What is your credit union savings deduction amount?: credit_union_savings_account_value
-    datatype: currency
-    required: False
-    show if: credit_union_savings_account
-  - I have a savings account: savings_account
-    datatype: yesno
-  - What is your savings account deduction amount?: savings_account_value
-    datatype: currency
-    required: False
-    show if: savings_account
-  - I have a retirement account: retirement_account
-    datatype: yesno
-  - What is your retirement account deduction amount?: retirement_account_value
-    datatype: currency
-    required: False
-    show if: retirement_account
-  - I have a another deduction (i.e. Child Support, Deferred Compensation or 401K): other_account_deduction
-    datatype: yesno
-  - Explain: other_account_deduction_explain
-    required: False
-    show if: other_account_deduction
-  - What is your other deduction amount?: other_account_deduction_value
-    datatype: currency
-    required: False
-    show if: other_account_deduction
+#  - The job has other deductions: x.to_subtract.there_is_another
+#    datatype: yesno
 ---
 variable name: non_wage_income_terms
 data: !!omap
@@ -464,20 +466,52 @@ fields:
   - Do you have any other money accounts?: money_accounts.there_is_another
     datatype: yesnoradio
 ---
-id: collect other assets
+id: tax_deferred_annuity_plans.there_are_any
 question: |
-  About your other assets
+  Tax Deferred Annuity Plans
 fields:
-  - I have tax deferred annuity plan(s): tax_deferred_annuity_plans
-    datatype: yesno
-  - Current value: tax_deferred_annuity_plans_value
+  - Do you have any tax deferred annuity plan(s): tax_deferred_annuity_plans.there_are_any
+    datatype: yesnoradio
+---
+id: collect tax_deferred_annuity_plans
+question: |
+  About your ${ ordinal(i) } tax deferred annuity plan
+fields:
+  - Current value: tax_deferred_annuity_plans[i].market_value
     datatype: currency
-    show if: tax_deferred_annuity_plans
-  - I have life insurance: life_insurance 
-    datatype: yesno
-  - Current value: life_insurance_value
+  - Do you have another tax deferred annuity plan?: tax_deferred_annuity_plans.there_is_another
+    datatype: yesnoradio
+---
+id: life_insurance_plans.there_are_any
+question: |
+  Life Insurance
+fields:
+  - Do you have life insurance: life_insurance_plans.there_are_any
+    datatype: yesnoradio
+---
+id: collect life_insurance_plans
+question: |
+  About your ${ ordinal(i) } life insurance plan
+fields:
+  - Current value: life_insurance_plans[i].market_value
     datatype: currency
-    show if: life_insurance
+  - Do you have another life insurance?: life_insurance_plans.there_is_another
+    datatype: yesnoradio
+#---
+#id: collect other assets
+#question: |
+#  About your other assets
+#fields:
+#  - I have tax deferred annuity plan(s): tax_deferred_annuity_plans
+#    datatype: yesno
+#  - Current value: tax_deferred_annuity_plans_value
+#    datatype: currency
+#    show if: tax_deferred_annuity_plans
+#  - I have life insurance: life_insurance 
+#    datatype: yesno
+#  - Current value: life_insurance_value
+#    datatype: currency
+#    show if: life_insurance
 ---
 id: other_assets.there_are_any
 question: |
@@ -512,3 +546,117 @@ validation code: |
   else: 
     x.to_add[ x.to_add.new_item_name ].exists = True
 ---
+#
+### collecting other deductions using expense list
+#   - other_deductions: ALExpenseList.using(complete_attribute='value')
+#---
+#objects:
+#  # a dict of expense sources for a multiple choice dropdown
+#  - other_deductions_ordered: DAOrderedDict.using(elements=other_deductions, auto_gather = False, gathered = True)
+#---
+#generic object: ALExpenseList
+#id: other_deductions types
+#question: |
+#  What kind of other deductions do you have?
+#fields:
+#  - no label: x.selected_types
+#    datatype: checkboxes
+#    code: |
+#      other_deductions_ordered
+#---
+#generic object: ALExpenseList
+#id: other_deductions information
+#question: |
+#  Tell us about your ${ ordinal(i) } other deduction?
+#fields: 
+#  - Type of expense: x[i].source
+#    code: |
+#      other_deductions_ordered
+#  - Other (explain): x[i].source
+#    show if:
+#      variable: x[i].source
+#      is: other
+#  - Amount: x[i].value
+#    datatype: currency
+#validation code: |
+#  x[i].display_name = other_deductions.get(x[i].source, x[i].source)
+#---
+#code: |
+#  other_deductions.selected_types
+#  other_deductions.move_checks_to_list(selected_terms=other_deductions)
+#  other_deductions.moved = True
+#---
+#code: |
+#  other_deductions.moved
+#  for exp in other_deductions.elements:
+#    exp.value
+#  other_deductions.gathered = True
+#---
+#variable name: other_deductions
+#data: !!omap
+#  - credit_union_loan_repayment: "Credit union loan repayment"
+#  - credit_union_savings_account: "Credit union savings account"
+#  - savings_account: "Savings account"
+#  - retirement_account: "Retirement account"
+#---
+#id: other_deductions.there_are_any
+#question: |
+#  Other deductions
+#subquestion: |
+#  Select "Yes" if you have any of the following: 
+#  
+#    * Credit union loan repayment; 
+#    * Credit union savings account;
+#    * Savings account; 
+#    * Retirement account; or
+#    * Any other deduction.
+#fields:
+#  - Do you have any other deductions?: other_deductions.there_are_any
+#    datatype: yesnoradio
+#---
+#generic object: ALItemizedJob
+#code: |
+#  if x.to_subtract.there_are_any:
+#    x.to_subtract["credit_union_loan_repayment"].exists = True
+#    x.to_subtract.gather()
+#  x.deduct_complete = True
+#---
+#generic object: ALItemizedJob
+#id: other deductions
+#question: |
+#  Other deductions
+#fields:
+#  - I have a credit union loan repayment: x.to_subtract['credit_union_loan_repayment'].exists
+#    datatype: yesno
+#  - What is your credit union loan repayment deduction amount?: x.to_subtract['credit_union_loan_repayment'].value
+#    datatype: currency
+#    required: False
+#    show if: x.to_subtract['credit_union_loan_repayment'].exists
+#  - I have a credit union savings account: x.to_subtract['credit_union_savings_account'].exists 
+#    datatype: yesno
+#  - What is your credit union savings deduction amount?: x.to_subtract['credit_union_savings_account'].value
+#    datatype: currency
+#    required: False
+#    show if: x.to_subtract['credit_union_savings_account'].exists
+#  - I have a savings account: x.to_subtract['savings_account'].exists
+#    datatype: yesno
+#  - What is your savings account deduction amount?: x.to_subtract['savings_account'].value
+#    datatype: currency
+#    required: False
+#    show if: x.to_subtract['savings_account'].exists
+#  - I have a retirement account: x.to_subtract['retirement_account'].exists
+#    datatype: yesno
+#  - What is your retirement account deduction amount?: x.to_subtract['retirement_account'].value
+#    datatype: currency
+#    required: False
+#    show if: x.to_subtract['retirement_account'].exists
+#  - I have another deduction (i.e. Child Support, Deferred Compensation or 401K): x.to_subtract['other_account_deduction'].exists
+#    datatype: yesno
+#  - Explain: x.to_subtract['other_account_deduction'].explain
+#    required: False
+#    show if: x.to_subtract['other_account_deduction'].exists
+#  - What is your other deduction amount?: x.to_subtract['other_account_deduction'].value
+#    datatype: currency
+#    required: False
+#    show if: x.to_subtract['other_account_deduction'].exists
+#---
