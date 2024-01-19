@@ -250,7 +250,7 @@ fields:
     show if: x.to_subtract['retirement_account'].exists
   - I have another deduction (i.e. Child Support, Deferred Compensation or 401K): x.to_subtract['other_account_deduction'].exists
     datatype: yesno
-  - Explain: x.to_subtract['other_account_deduction'].explain
+  - Explain: x.other_account_deduction_explain
     required: False
     show if: x.to_subtract['other_account_deduction'].exists
   - What is your other deduction amount?: x.to_subtract['other_account_deduction'].value

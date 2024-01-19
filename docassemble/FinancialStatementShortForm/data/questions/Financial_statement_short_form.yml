@@ -178,7 +178,7 @@ code: |
   store_variables_snapshot(data={'zip': users[0].address.zip})
   Financial_statement_short_form_preview_question
   basic_questions_signature_flow
-  attorneys[0].signature
+  #attorneys[0].signature
   users[0].signature
   Financial_statement_short_form_download
 ---
@@ -533,7 +533,7 @@ subquestion: |
 continue button field: Financial_statement_short_form_preview_question    
 ---
 code: |
-  signature_fields = ['attorneys[0].signature', 'users[0].signature']
+  signature_fields = ['users[0].signature']
 ---
 id: download Financial_statement_short_form
 event: Financial_statement_short_form_download
@@ -555,8 +555,17 @@ subquestion: |
 progress: 100
 ---
 objects:
-  - Financial_statement_short_form_post_interview_instructions: ALDocument.using(title="Instructions", filename="Financial_statement_short_form_next_steps.docx", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - Financial_statement_short_form_post_interview_instructions: ALDocument.using(title="Instructions", filename="Financial_statement_short_form_next_steps.docx", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - Financial_statement_short_form_attachment: ALDocument.using(title="Probate and Family Court Financial statement (short form) (CJD 301S)", filename="Financial_statement_short_form_CJD-301S_fillable.pdf", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+---
+attachment:
+  variable name: Financial_statement_short_form_attachment.addendum
+  docx template file: Financial_statement_short_form_addendum.docx
+---
+code: |
+  Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].overflow_trigger = 60
+  Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].label = "Other income sources"
+  Financial_statement_short_form_attachment.overflow_fields.gathered = True  
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[Financial_statement_short_form_post_interview_instructions,Financial_statement_short_form_attachment], filename="Financial_statement_short_form_package.pdf", title="All forms to download for your records", enabled=True)
@@ -715,7 +724,7 @@ attachments:
           ${ currency(other_incomes.total(times_per_year=52, source=["household contributions"]), symbol='') }
       - "income_other1_amount": ${ currency(income_other1_amount, symbol='') }
       - "income_other2_amount": ${ currency(income_other2_amount, symbol='') }
-      - "income_other_sources": ${ income_other_sources }
+      - "income_other_sources": ${ Financial_statement_short_form_attachment.safe_value('income_other_sources') }
       - "total_gross_weekly_income_amount": |
           ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52), symbol='') }
       - "exemptions_federal_income_tax": |
@@ -738,7 +747,7 @@ attachments:
       - "deductions_credit_union_loan_savings_amount": ${ currency(jobs.deduction_total(source=['credit_union_loan_repayment']) + jobs.deduction_total(source=['credit_union_savings_account']), symbol='') }
       - "deductions_savings_amount": ${ currency(jobs.deduction_total(source=['savings_account']), symbol='') }
       - "deductions_retirement_amount": ${ currency(jobs.deduction_total(source=['retirement_account']), symbol='') }
-      - "other_deductions_specifics": ${ jobs.to_subtract['other_account_deduction'].explain }
+      - "other_deductions_specifics": ${ jobs.other_account_deduction_explain }
       - "deductions_child_support_compensation_401k_etc_amount": ${ currency(jobs.deduction_total(source=['other_account_deduction']), symbol='') }
       - "other_deductions_total_amount": ${ currency(jobs.deduction_total(source=['other_account_deduction', 'credit_union_loan_repayment', 'credit_union_savings_account', 'savings_account', 'retirement_account']), symbol='') }
       - "net_weekly_income_amount": | 
@@ -764,7 +773,7 @@ attachments:
       - "expense_other_amount": ${ currency(expenses.total(times_per_year=52, source='other'), symbol='') }
       - "expense_others_amount": ${ currency(expense_others_amount, symbol='') }
       - "expense_laundry_cleaning_amount": ${ currency(expenses.total(times_per_year=52, source='laudry and cleaing'), symbol='') }
-      - "expenses_other_explanation": ${ expenses_other_explanation }
+      - "expenses_other_explanation": ${ expenses.sources('other') }
       - "expense_clothing_amount": ${ currency(expenses.total(times_per_year=52, source='clothes'), symbol='') }
       - "total_weekly_expenses_amount": ${ currency(expenses.total(times_per_year=52), symbol='') }
       - "legal_fees_amount": ${ currency(retainer_amounts, symbol='') }
