@@ -169,17 +169,12 @@ comment: |
   Delete mandatory: True to include in another interview
 mandatory: True
 code: |
-  # Ensure currency is in US dollars
-  set_locale(currency_symbol='$')
   al_intro_screen
   Financial_statement_short_form_intro
   interview_order_Financial_statement_short_form
   signature_date
   # Save anonymized interview statistics (customize the saved data below)
   store_variables_snapshot(data={'zip': users[0].address.zip})
-  # Ensure no (redundant) currency symbol appears in the documents
-  # It doesn't affect the currency symbol in review screens, but not much does
-  set_locale(currency_symbol='')
   Financial_statement_short_form_preview_question
   basic_questions_signature_flow
   attorneys[0].signature
@@ -626,40 +621,40 @@ attachments:
       - "creditor2": ${ creditors[2].name }
       - "creditor3": ${ creditors[3].name }
       - "liability_incurred": ${ creditors[0].date_incurred }
-      - "liability_weekly_payment_amount": ${ currency(creditors[0].weekly_payment) }
+      - "liability_weekly_payment_amount": ${ currency(creditors[0].weekly_payment, symbol='') }
       - "liability": ${ creditors[0].nature_of_debt }
-      - "liability_due_value": ${ currency(creditors[0].amount_due) }
-      - "liability1_weekly_payment_amount": ${ currency(creditors[1].weekly_payment) }
+      - "liability_due_value": ${ currency(creditors[0].amount_due, symbol='') }
+      - "liability1_weekly_payment_amount": ${ currency(creditors[1].weekly_payment, symbol='') }
       - "liability1": ${ creditors[1].nature_of_debt }
       - "liability1_incurred": ${ creditors[1].date_incurred }
-      - "liability1_due_value": ${ currency(creditors[1].amount_due) }
+      - "liability1_due_value": ${ currency(creditors[1].amount_due, symbol='') }
       - "liability2": ${ creditors[2].nature_of_debt }
-      - "liability2_weekly_payment_amount": ${ currency(creditors[2].weekly_payment) }
+      - "liability2_weekly_payment_amount": ${ currency(creditors[2].weekly_payment, symbol='') }
       - "liability2_incurred": ${ creditors[2].date_incurred }
-      - "liability2_due_value": ${ currency(creditors[2].amount_due) }
-      - "liability3_weekly_payment_amount": ${ currency(creditors[3].weekly_payment) }
+      - "liability2_due_value": ${ currency(creditors[2].amount_due, symbol='') }
+      - "liability3_weekly_payment_amount": ${ currency(creditors[3].weekly_payment, symbol='') }
       - "liability3": ${ creditors[3].nature_of_debt }
       - "liability3_incurred": ${ creditors[3].date_incurred }
-      - "liability3_due_value": ${ currency(creditors[3].amount_due) }
+      - "liability3_due_value": ${ currency(creditors[3].amount_due, symbol='') }
       - "liabilities_total_due_value": |
           % if len(creditors) == 1:
-          ${ currency(creditors[0].amount_due) }
+          ${ currency(creditors[0].amount_due, symbol='') }
           % elif len(creditors) == 2:
-          ${ currency(creditors[0].amount_due + creditors[1].amount_due) }
+          ${ currency(creditors[0].amount_due + creditors[1].amount_due, symbol='') }
           % elif len(creditors) == 3:
-          ${ currency(creditors[0].amount_due + creditors[1].amount_due + creditors[2].amount_due) }
+          ${ currency(creditors[0].amount_due + creditors[1].amount_due + creditors[2].amount_due, symbol='') }
           % elif len(creditors) == 4:
-          ${ currency(creditors[0].amount_due + creditors[1].amount_due + creditors[2].amount_due + creditors[4].amount_due) }
+          ${ currency(creditors[0].amount_due + creditors[1].amount_due + creditors[2].amount_due + creditors[4].amount_due, symbol='') }
           % endif
       - "liabilities_total_weekly_payment_amount": |
           % if len(creditors) == 1:
-          ${ currency(creditors[0].weekly_payment) }
+          ${ currency(creditors[0].weekly_payment, symbol='') }
           % elif len(creditors) == 2:
-          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment) }
+          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment, symbol='') }
           % elif len(creditors) == 3:
-          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment + creditors[2].weekly_payment) }
+          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment + creditors[2].weekly_payment, symbol='') }
           % elif len(creditors) == 4:
-          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment + creditors[2].weekly_payment + creditors[4].weekly_payment) }
+          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment + creditors[2].weekly_payment + creditors[4].weekly_payment, symbol='') }
           % endif
       - "signature_date": ${ signature_date }
       - "users_signature": ${ users[0].signature_if_final(i) }
@@ -687,146 +682,146 @@ attachments:
           ${ True if True in [not job.is_part_time and not job.is_hourly and not job.is_self_employed for job in jobs] else False }
       - "base_pay_is_wages": |
           ${ True if True in [not job.is_part_time and job.is_hourly and not job.is_self_employed for job in jobs] else False }
-      - "income_base_pay_amount": ${ currency(jobs.total(times_per_year=52, source=["full time"])) }
+      - "income_base_pay_amount": ${ currency(jobs.total(times_per_year=52, source=["full time"]), symbol='') }
       - "income_overtime_amount": |
-          ${ currency(jobs.total(times_per_year=52, source=["overtime"])) }
-      - "income_part_time_amount": ${ currency(jobs.total(times_per_year=52, source=["part time"])) }
-      - "income_self_employment_amount": ${ currency(jobs.total(times_per_year=52, source=["self employment"])) }
-      - "income_tips_amount": ${ currency(jobs.total(times_per_year=52, source=["tips"])) }
+          ${ currency(jobs.total(times_per_year=52, source=["overtime"]), symbol='') }
+      - "income_part_time_amount": ${ currency(jobs.total(times_per_year=52, source=["part time"]), symbol='') }
+      - "income_self_employment_amount": ${ currency(jobs.total(times_per_year=52, source=["self employment"]), symbol='') }
+      - "income_tips_amount": ${ currency(jobs.total(times_per_year=52, source=["tips"]), symbol='') }
       - "bonuses": |
           ${ True if jobs.total(times_per_year=52, source=["bonuses"]) else False }
       - "commissions": |
           ${ True if jobs.total(times_per_year=52, source=["commissions"]) else False }
-      - "income_commissions_bonuses_amount": ${ currency(jobs.total(times_per_year=52, source=["bonuses"]) + jobs.total(times_per_year=52, source=["commissions"])) }
+      - "income_commissions_bonuses_amount": ${ currency(jobs.total(times_per_year=52, source=["bonuses"]) + jobs.total(times_per_year=52, source=["commissions"]), symbol='') }
       - "interest": |
           ${ True if other_incomes.total(times_per_year=52, source=["interest"]) else False }
       - "dividends": |
           ${ True if other_incomes.total(times_per_year=52, source=["dividends"]) else False }
-      - "income_dividends_interest_amount": ${ currency(other_incomes.total(times_per_year=52, source=["interest"]) + other_incomes.total(times_per_year=52, source=["dividends"])) }
+      - "income_dividends_interest_amount": ${ currency(other_incomes.total(times_per_year=52, source=["interest"]) + other_incomes.total(times_per_year=52, source=["dividends"]), symbol='') }
       - "trusts": |
           ${ True if other_incomes.total(times_per_year=52, source=["trusts"]) else False }
       - "annuities": |
           ${ True if other_incomes.total(times_per_year=52, source=["annuities"]) else False }
-      - "income_trusts_annuities_amount": ${ currency(other_incomes.total(times_per_year=52, source=["trusts"]) + other_incomes.total(times_per_year=52, source=["annuities"])) }
+      - "income_trusts_annuities_amount": ${ currency(other_incomes.total(times_per_year=52, source=["trusts"]) + other_incomes.total(times_per_year=52, source=["annuities"]), symbol='') }
       - "pensions": |
           ${ True if other_incomes.total(times_per_year=52, source=["pensions"]) else False }
       - "retirement_funds": |
           ${ True if other_incomes.total(times_per_year=52, source=["retirement funds"]) else False }
-      - "income_pensions_retirement_amount": ${ currency(other_incomes.total(times_per_year=52, source=["pensions"]) + other_incomes.total(times_per_year=52, source=["retirement funds"])) }
-      - "income_social_security_amount": ${ currency(other_incomes.total(times_per_year=52, source=["social security"])) }
+      - "income_pensions_retirement_amount": ${ currency(other_incomes.total(times_per_year=52, source=["pensions"]) + other_incomes.total(times_per_year=52, source=["retirement funds"]), symbol='') }
+      - "income_social_security_amount": ${ currency(other_incomes.total(times_per_year=52, source=["social security"]), symbol='') }
       - "disability": |
           ${ True if other_incomes.total(times_per_year=52, source=["disability"]) else False }
       - "unemployment_insurance": |
           ${ True if other_incomes.total(times_per_year=52, source=["unemployment insurance"]) else False }
       - "workers_compensation": |
           ${ True if other_incomes.total(times_per_year=52, source=["workers compensation"]) else False }
-      - "income_disability_ui_workers_comp_amount":  ${ currency(other_incomes.total(times_per_year=52, source=["disability"]) + other_incomes.total(times_per_year=52, source=["unemployment insurance"]) + other_incomes.total(times_per_year=52, source=["workers compensation"])) }
+      - "income_disability_ui_workers_comp_amount":  ${ currency(other_incomes.total(times_per_year=52, source=["disability"]) + other_incomes.total(times_per_year=52, source=["unemployment insurance"]) + other_incomes.total(times_per_year=52, source=["workers compensation"]), symbol='') }
       - "income_public_benefits_amount": | 
-          ${ currency(other_incomes.total(times_per_year=52, source=["public assistance"])) }
+          ${ currency(other_incomes.total(times_per_year=52, source=["public assistance"]), symbol='') }
       - "child_support": |
           ${ True if other_incomes.total(times_per_year=52, source=["child support"]) else False }
       - "alimony_actually_received": |
           ${ True if other_incomes.total(times_per_year=52, source=["alimony"]) else False }
-      - "income_child_support_alimony_amount": ${ currency(other_incomes.total(times_per_year=52, source=["child support"]) + other_incomes.total(times_per_year=52, source=["alimony"])) }
+      - "income_child_support_alimony_amount": ${ currency(other_incomes.total(times_per_year=52, source=["child support"]) + other_incomes.total(times_per_year=52, source=["alimony"]), symbol='') }
       - "income_rental_amount": | 
-          ${ currency(other_incomes.total(times_per_year=52, source=["rent"])) }
+          ${ currency(other_incomes.total(times_per_year=52, source=["rent"]), symbol='') }
       - "income_royalties_amount_amount": | 
-          ${ currency(other_incomes.total(times_per_year=52, source=["royalties"])) }
+          ${ currency(other_incomes.total(times_per_year=52, source=["royalties"]), symbol='') }
       - "income_household_member_contributions_amount": | 
-          ${ currency(other_incomes.total(times_per_year=52, source=["household contributions"])) }
-      - "income_other1_amount": ${ currency(income_other1_amount) }
-      - "income_other2_amount": ${ currency(income_other2_amount) }
+          ${ currency(other_incomes.total(times_per_year=52, source=["household contributions"]), symbol='') }
+      - "income_other1_amount": ${ currency(income_other1_amount, symbol='') }
+      - "income_other2_amount": ${ currency(income_other2_amount, symbol='') }
       - "income_other_sources": ${ income_other_sources }
       - "total_gross_weekly_income_amount": |
-          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) }
+          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52), symbol='') }
       - "exemptions_federal_income_tax": |
           ${ comma_and_list(federal_tax_exemptions.true_values()) }
       - "deductions_federal_income_tax_amount": |
-          ${ currency(jobs.deduction_total(times_per_year=52, source='federal_taxes')) }
+          ${ currency(jobs.deduction_total(times_per_year=52, source='federal_taxes'), symbol='') }
       - "exemptions_state_income_tax": |
           ${ comma_and_list(state_tax_exemptions.true_values()) }
       - "deductions_state_income_tax_amount": |
-          ${ currency(jobs.deduction_total(times_per_year=52, source='state_taxes')) }
-      - "deductions_fica_medicare_amount": ${ currency(jobs.deduction_total(times_per_year=52, source='fica_medicare')) }
+          ${ currency(jobs.deduction_total(times_per_year=52, source='state_taxes'), symbol='') }
+      - "deductions_fica_medicare_amount": ${ currency(jobs.deduction_total(times_per_year=52, source='fica_medicare'), symbol='') }
       - "deductions_medical_insurance_amount": |
-          ${ currency(jobs.deduction_total(times_per_year=52, source='medical_insurance')) }
-      - "deductions_union_dues_amount": ${ currency(jobs.deduction_total(times_per_year=52, source='union_dues')) }
-      - "deductions_total_amount": ${ currency(jobs.deduction_total(times_per_year=52)) }
+          ${ currency(jobs.deduction_total(times_per_year=52, source='medical_insurance'), symbol='') }
+      - "deductions_union_dues_amount": ${ currency(jobs.deduction_total(times_per_year=52, source='union_dues'), symbol='') }
+      - "deductions_total_amount": ${ currency(jobs.deduction_total(times_per_year=52), symbol='') }
       - "adjusted_net_weekly_income_amount": |
-          ${ currency((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52)) }
+          ${ currency((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52), symbol='') }
       - "deduction_loan_repayment_yes": ${ credit_union_loan_repayment }
       - "deduction_savings_yes": ${ credit_union_savings_account }
-      - "deductions_credit_union_loan_savings_amount": ${ currency(credit_union_loan_repayment_value) }
-      - "deductions_savings_amount": ${ currency(credit_union_savings_account_value) }
-      - "deductions_retirement_amount": ${ currency(retirement_account_value) }
+      - "deductions_credit_union_loan_savings_amount": ${ currency(credit_union_loan_repayment_value, symbol='') }
+      - "deductions_savings_amount": ${ currency(credit_union_savings_account_value, symbol='') }
+      - "deductions_retirement_amount": ${ currency(retirement_account_value, symbol='') }
       - "other_deductions_specifics": ${ other_account_deduction_explain }
-      - "deductions_child_support_compensation_401k_etc_amount": ${ currency(other_account_deduction_value) }
-      - "other_deductions_total_amount": ${ currency(credit_union_loan_repayment_value + credit_union_savings_account_value + retirement_account_value + other_account_deduction_value) }
+      - "deductions_child_support_compensation_401k_etc_amount": ${ currency(other_account_deduction_value, symbol='') }
+      - "other_deductions_total_amount": ${ currency(credit_union_loan_repayment_value + credit_union_savings_account_value + retirement_account_value + other_account_deduction_value, symbol='') }
       - "net_weekly_income_amount": | 
-          ${ currency(((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52)) - (credit_union_loan_repayment_value + credit_union_savings_account_value + retirement_account_value + other_account_deduction_value)) }
-      - "gross_yearly_income_last_year_amount": ${ currency(gross_annual_income) }
+          ${ currency(((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52)) - (credit_union_loan_repayment_value + credit_union_savings_account_value + retirement_account_value + other_account_deduction_value), symbol='') }
+      - "gross_yearly_income_last_year_amount": ${ currency(gross_annual_income, symbol='') }
       - "years_paid_into_social_security": ${ years_paid_ss }
-      - "expense_life_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='life insurance')) }
-      - "expense_rent_amount": ${ currency(expenses.total(times_per_year=52, source='rent or mortgage')) }
-      - "expense_medical_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='medical insurance')) }
-      - "expense_home_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='homeowner rental insurance')) }
-      - "expense_medical_uninsured_amount": ${ currency(expenses.total(times_per_year=52, source='uninsured medicals')) }
-      - "expense_maintenance_amount": ${ currency(expenses.total(times_per_year=52, source='maintenance repair')) } 
-      - "expense_heat_amount": ${ currency(expenses.total(times_per_year=52, source='heat')) } 
-      - "expense_toiletries_amount": ${ currency(expenses.total(times_per_year=52, source='incidentals and toiletries')) } 
-      - "expense_electricity_gas_amount": ${ currency(expenses.total(times_per_year=52, source='electric or gas')) }
-      - "expense_motor_vehicles_amount": ${ currency(expenses.total(times_per_year=52, source='motor vehicle expenses'))  }
-      - "expense_phone_amount": ${ currency(expenses.total(times_per_year=52, source='telephone')) }
-      - "expense_motor_vehicle_payment_amount": ${ currency(expenses.total(times_per_year=52, source='motor vehicle payment')) }
-      - "expense_water_sewer_amount": ${ currency(expenses.total(times_per_year=52, source='water sewer')) }
-      - "expense_child_care_amount": ${ currency(expenses.total(times_per_year=52, source='child care')) }
-      - "expense_food_amount": ${ currency(expenses.total(times_per_year=52, source='food')) }
-      - "expense_house_supplies_amount": ${ currency(expenses.total(times_per_year=52, source='house supplies')) }
-      - "expense_other_amount": ${ currency(expenses.total(times_per_year=52, source='other')) }
-      - "expense_others_amount": ${ currency(expense_others_amount) }
-      - "expense_laundry_cleaning_amount": ${ currency(expenses.total(times_per_year=52, source='laudry and cleaing')) }
+      - "expense_life_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='life insurance'), symbol='') }
+      - "expense_rent_amount": ${ currency(expenses.total(times_per_year=52, source='rent or mortgage'), symbol='') }
+      - "expense_medical_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='medical insurance'), symbol='') }
+      - "expense_home_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='homeowner rental insurance'), symbol='') }
+      - "expense_medical_uninsured_amount": ${ currency(expenses.total(times_per_year=52, source='uninsured medicals'), symbol='') }
+      - "expense_maintenance_amount": ${ currency(expenses.total(times_per_year=52, source='maintenance repair'), symbol='') }
+      - "expense_heat_amount": ${ currency(expenses.total(times_per_year=52, source='heat'), symbol='') }
+      - "expense_toiletries_amount": ${ currency(expenses.total(times_per_year=52, source='incidentals and toiletries'), symbol='') }
+      - "expense_electricity_gas_amount": ${ currency(expenses.total(times_per_year=52, source='electric or gas'), symbol='') }
+      - "expense_motor_vehicles_amount": ${ currency(expenses.total(times_per_year=52, source='motor vehicle expenses'), symbol='') }
+      - "expense_phone_amount": ${ currency(expenses.total(times_per_year=52, source='telephone'), symbol='') }
+      - "expense_motor_vehicle_payment_amount": ${ currency(expenses.total(times_per_year=52, source='motor vehicle payment'), symbol='') }
+      - "expense_water_sewer_amount": ${ currency(expenses.total(times_per_year=52, source='water sewer'), symbol='') }
+      - "expense_child_care_amount": ${ currency(expenses.total(times_per_year=52, source='child care'), symbol='') }
+      - "expense_food_amount": ${ currency(expenses.total(times_per_year=52, source='food'), symbol='') }
+      - "expense_house_supplies_amount": ${ currency(expenses.total(times_per_year=52, source='house supplies'), symbol='') }
+      - "expense_other_amount": ${ currency(expenses.total(times_per_year=52, source='other'), symbol='') }
+      - "expense_others_amount": ${ currency(expense_others_amount, symbol='') }
+      - "expense_laundry_cleaning_amount": ${ currency(expenses.total(times_per_year=52, source='laudry and cleaing'), symbol='') }
       - "expenses_other_explanation": ${ expenses_other_explanation }
-      - "expense_clothing_amount": ${ currency(expenses.total(times_per_year=52, source='clothes')) }
-      - "total_weekly_expenses_amount": ${ currency(expenses.total(times_per_year=52)) }
-      - "legal_fees_amount": ${ currency(retainer_amounts) }
-      - "legal_fees_incurred_to_date_against_retainer_amount": ${ currency(legal_fees) }
-      - "legal_fees_total_miniimum_amount": ${ currency(lowest_total) }
-      - "legal_fees_total_maximum_amount": ${ currency(highest_total) }
-      - "assets_real_estate_address": ${ all_real_estate[0].address  }
+      - "expense_clothing_amount": ${ currency(expenses.total(times_per_year=52, source='clothes'), symbol='') }
+      - "total_weekly_expenses_amount": ${ currency(expenses.total(times_per_year=52), symbol='') }
+      - "legal_fees_amount": ${ currency(retainer_amounts, symbol='') }
+      - "legal_fees_incurred_to_date_against_retainer_amount": ${ currency(legal_fees, symbol='') }
+      - "legal_fees_total_miniimum_amount": ${ currency(lowest_total, symbol='') }
+      - "legal_fees_total_maximum_amount": ${ currency(highest_total, symbol='') }
+      - "assets_real_estate_address": ${ all_real_estate[0].address }
       - "assets_real_estate_name_on_title": ${ all_real_estate[0].title_holders }
-      - "assets_real_estate_fair_market_value": ${ currency(all_real_estate[0].market_value) }
-      - "assets_real_estate_mortgage_value": ${ currency(all_real_estate[0].balance) }
-      - "assets_real_estate_equity_value": ${ currency(all_real_estate[0].equity()) }
-      - "assets_motor_vehicle_fair_market_value": ${ currency(motor_vehicles[0].market_value) }
-      - "assets_motor_vehicle_loan_amount": ${ currency(motor_vehicles[0].balance) }
-      - "assets_motor_vehicle_equity_value": ${ currency(motor_vehicles[0].equity()) }
-      - "assets_motor_vehicle1_fair_market_value": ${ currency(motor_vehicles[1].market_value) }
-      - "assets_motor_vehicle1_loan_amount": ${ currency(motor_vehicles[1].balance) }
-      - "assets_motor_vehicle1_equity_value": ${ currency(motor_vehicles[1].equity()) }
-      - "assets_retirement_plan_value": ${ currency(retirement_accounts[0].market_value) }
-      - "assets_retirement_plan1_value": ${ currency(retirement_accounts[1].market_value) }
-      - "assets_retirement_plan2_value": ${ currency(retirement_accounts[2].market_value) }
+      - "assets_real_estate_fair_market_value": ${ currency(all_real_estate[0].market_value, symbol='') }
+      - "assets_real_estate_mortgage_value": ${ currency(all_real_estate[0].balance, symbol='') }
+      - "assets_real_estate_equity_value": ${ currency(all_real_estate[0].equity(), symbol='') }
+      - "assets_motor_vehicle_fair_market_value": ${ currency(motor_vehicles[0].market_value, symbol='') }
+      - "assets_motor_vehicle_loan_amount": ${ currency(motor_vehicles[0].balance, symbol='') }
+      - "assets_motor_vehicle_equity_value": ${ currency(motor_vehicles[0].equity(), symbol='') }
+      - "assets_motor_vehicle1_fair_market_value": ${ currency(motor_vehicles[1].market_value, symbol='') }
+      - "assets_motor_vehicle1_loan_amount": ${ currency(motor_vehicles[1].balance, symbol='') }
+      - "assets_motor_vehicle1_equity_value": ${ currency(motor_vehicles[1].equity(), symbol='') }
+      - "assets_retirement_plan_value": ${ currency(retirement_accounts[0].market_value, symbol='') }
+      - "assets_retirement_plan1_value": ${ currency(retirement_accounts[1].market_value, symbol='') }
+      - "assets_retirement_plan2_value": ${ currency(retirement_accounts[2].market_value, symbol='') }
       - "assets_retirement_plan_name_and_account_number": |
           % for retirement_account in retirement_accounts: 
           ${ retirement_account.name } ${ retirement_account.account_number }
           % endfor
-      - "assets_tax_deferred_annuity_plan_value": ${ currency(tax_deferred_annuity_plans_value) }
-      - "assets_life_insurance": ${ currency(life_insurance_value) }
+      - "assets_tax_deferred_annuity_plan_value": ${ currency(tax_deferred_annuity_plans_value, symbol='') }
+      - "assets_life_insurance": ${ currency(life_insurance_value, symbol='') }
       - "assets_account_name_and_number": |
           ${ money_accounts[0].name } ${ money_accounts[0].account_number }
-      - "assets_account_value": ${ currency(money_accounts[0].market_value) }
+      - "assets_account_value": ${ currency(money_accounts[0].market_value, symbol='') }
       - "assets_account_name_and_number1": |
           ${ money_accounts[1].name } ${ money_accounts[1].account_number }
-      - "assets_account_value1": ${ currency(money_accounts[1].market_value) }
+      - "assets_account_value1": ${ currency(money_accounts[1].market_value, symbol='') }
       - "assets_account_name_and_number2": |
           ${ money_accounts[2].name } ${ money_accounts[2].account_number }
-      - "assets_account_value2": ${ currency(money_accounts[2].market_value) }
+      - "assets_account_value2": ${ currency(money_accounts[2].market_value, symbol='') }
       - "assets_stocks_and_bonds": ${ other_assets[0].name }
-      - "assets_stocks_and_bonds_value": ${ currency(other_assets[0].market_value) }
+      - "assets_stocks_and_bonds_value": ${ currency(other_assets[0].market_value, symbol='') }
       - "assets_stocks_and_bonds1": ${ other_assets[1].name }
-      - "assets_stocks_and_bonds_value1": ${ currency(other_assets[1].market_value) }
+      - "assets_stocks_and_bonds_value1": ${ currency(other_assets[1].market_value, symbol='') }
       - "total_assets_value": |
-          ${ currency(all_real_estate.equity() + motor_vehicles.equity() + retirement_accounts.market_value() + money_accounts.market_value() + (tax_deferred_annuity_plans_value if tax_deferred_annuity_plans else 0) + (life_insurance_value if life_insurance else 0)) }
+          ${ currency(all_real_estate.equity() + motor_vehicles.equity() + retirement_accounts.market_value() + money_accounts.market_value() + (tax_deferred_annuity_plans_value if tax_deferred_annuity_plans else 0) + (life_insurance_value if life_insurance else 0), symbol='') }
       - "attorney_signature_date": ${ attorney_signature_date }
       - "attorney_bbo_number": ${ attorney_bbo_number }
 ---
