@@ -93,7 +93,6 @@ objects:
   - other_assets: ALAssetList.using(complete_attribute='market_value')
   - tax_deferred_annuity_plans: ALAssetList.using(complete_attribute='market_value')
   - life_insurance_plans: ALAssetList.using(complete_attribute='market_value')
-  - other_deductions: ALItemizedJobList.using(there_are_any=True, complete_attribute='deduct_complete')
 ---
 sections:
   - review_Financial_statement_short_form: Review your answers
@@ -144,10 +143,6 @@ code: |
   
   jobs.gather()
   review_jobs
-  
-  tax_deferred_annuity_plans.gather()
-  life_insurance_plans.gather()
-  other_deductions.gather()
   
   claiming_federal_tax_exemptions
   years_paid_ss
@@ -742,16 +737,16 @@ attachments:
       - "deductions_total_amount": ${ currency(jobs.deduction_total(times_per_year=52)) }
       - "adjusted_net_weekly_income_amount": |
           ${ currency((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52)) }
-      - "deduction_loan_repayment_yes": ${ True if other_deductions.deduction_total(source=['credit_union_loan_repayment']) else False }
-      - "deduction_savings_yes": ${ True if other_deductions.deduction_total(source=['credit_union_savings_account']) else False }
-      - "deductions_credit_union_loan_savings_amount": ${ currency(other_deductions.deduction_total(source=['credit_union_loan_repayment']) + other_deductions.deduction_total(source=['credit_union_savings_account'])) }
-      - "deductions_savings_amount": ${ currency(other_deductions.deduction_total(source=['savings_account'])) }
-      - "deductions_retirement_amount": ${ currency(other_deductions.deduction_total(source=['retirement_account'])) }
-      - "other_deductions_specifics": ${ other_deductions.to_subtract['other_account_deduction'].explain }
-      - "deductions_child_support_compensation_401k_etc_amount": ${ currency(other_deductions.deduction_total(source=['other_account_deduction'])) }
-      - "other_deductions_total_amount": ${ currency(other_deductions.deduction_total()) }
+      - "deduction_loan_repayment_yes": ${ True if jobs.deduction_total(source=['credit_union_loan_repayment']) else False }
+      - "deduction_savings_yes": ${ True if jobs.deduction_total(source=['credit_union_savings_account']) else False }
+      - "deductions_credit_union_loan_savings_amount": ${ currency(jobs.deduction_total(source=['credit_union_loan_repayment']) + jobs.deduction_total(source=['credit_union_savings_account'])) }
+      - "deductions_savings_amount": ${ currency(jobs.deduction_total(source=['savings_account'])) }
+      - "deductions_retirement_amount": ${ currency(jobs.deduction_total(source=['retirement_account'])) }
+      - "other_deductions_specifics": ${ jobs.to_subtract['other_account_deduction'].explain }
+      - "deductions_child_support_compensation_401k_etc_amount": ${ currency(jobs.deduction_total(source=['other_account_deduction'])) }
+      - "other_deductions_total_amount": ${ currency(jobs.deduction_total(source=['other_account_deduction', 'credit_union_loan_repayment', 'credit_union_savings_account', 'savings_account', 'retirement_account'])) }
       - "net_weekly_income_amount": | 
-          ${ currency(((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52)) - other_deductions.deduction_total()) }
+          ${ currency((jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52)) - jobs.deduction_total(times_per_year=52) - jobs.deduction_total(source=['other_account_deduction', 'credit_union_loan_repayment', 'credit_union_savings_account', 'savings_account', 'retirement_account'])) }
       - "gross_yearly_income_last_year_amount": ${ currency(gross_annual_income) }
       - "years_paid_into_social_security": ${ years_paid_ss }
       - "expense_life_insurance_amount": ${ currency(expenses.total(times_per_year=52, source='life insurance')) }
