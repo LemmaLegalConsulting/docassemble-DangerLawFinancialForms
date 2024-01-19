@@ -23,10 +23,6 @@ metadata:
     - Jeff Wolf
     - Oonagh Doherty
 ---
-initial: True
-code: |
-  set_locale(currency_symbol=' ')
----
 mandatory: True
 comment: |
   This contains metadata that will not be overwritten if this YAML file is included in another
@@ -173,12 +169,17 @@ comment: |
   Delete mandatory: True to include in another interview
 mandatory: True
 code: |
+  # Ensure currency is in US dollars
+  set_locale(currency_symbol='$')
   al_intro_screen
   Financial_statement_short_form_intro
   interview_order_Financial_statement_short_form
   signature_date
   # Save anonymized interview statistics (customize the saved data below)
   store_variables_snapshot(data={'zip': users[0].address.zip})
+  # Ensure no (redundant) currency symbol appears in the documents
+  # It doesn't affect the currency symbol in review screens, but not much does
+  set_locale(currency_symbol='')
   Financial_statement_short_form_preview_question
   basic_questions_signature_flow
   attorneys[0].signature

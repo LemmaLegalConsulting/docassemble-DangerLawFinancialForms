@@ -619,9 +619,9 @@ columns:
   - Date incurred:  |
       row_item.date_incurred if defined("row_item.date_incurred") else ""
   - Amount due:  |
-      row_item.amount_due if defined("row_item.amount_due") else ""
+      currency(row_item.amount_due) if defined("row_item.amount_due") else ""
   - Weekly payment:  |
-      row_item.weekly_payment if defined("row_item.weekly_payment") else ""
+      currency(row_item.weekly_payment) if defined("row_item.weekly_payment") else ""
 edit:
   - name
   - nature_of_debt
