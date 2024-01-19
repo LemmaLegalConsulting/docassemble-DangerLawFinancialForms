@@ -28,6 +28,12 @@ code: |
   x.to_subtract.gather()
   x.complete = True
 ---
+generic object: ALItemizedJob
+code: |
+  x.to_subtract.complete_attribute = 'complete'
+  x.to_subtract.gather()
+  x.deduct_complete = True
+---
 generic object: ALItemizedJob 
 code: |
   x.to_subtract.initializeObject("federal_taxes")
@@ -225,39 +231,39 @@ id: other deductions
 question: |
   Other deductions
 fields:
-  - I have a credit union loan repayment: credit_union_loan_repayment
+  - I have a credit union loan repayment: other_deductions.to_subtract['credit_union_loan_repayment'].exists
     datatype: yesno
-  - What is your credit union loan repayment deduction amount?: credit_union_loan_repayment_value
+  - What is your credit union loan repayment deduction amount?: other_deductions.to_subtract['credit_union_loan_repayment'].value
     datatype: currency
     required: False
-    show if: credit_union_loan_repayment
-  - I have a credit union savings account: credit_union_savings_account
+    show if: other_deductions.to_subtract['credit_union_loan_repayment'].exists
+  - I have a credit union savings account: other_deductions.to_subtract['credit_union_savings_account'].exists 
     datatype: yesno
-  - What is your credit union savings deduction amount?: credit_union_savings_account_value
+  - What is your credit union savings deduction amount?: other_deductions.to_subtract['credit_union_savings_account'].value
     datatype: currency
     required: False
-    show if: credit_union_savings_account
-  - I have a savings account: savings_account
+    show if: other_deductions.to_subtract['credit_union_savings_account'].exists
+  - I have a savings account: other_deductions.to_subtract['savings_account'].exists
     datatype: yesno
-  - What is your savings account deduction amount?: savings_account_value
+  - What is your savings account deduction amount?: other_deductions.to_subtract['savings_account'].value
     datatype: currency
     required: False
-    show if: savings_account
-  - I have a retirement account: retirement_account
+    show if: other_deductions.to_subtract['savings_account'].exists
+  - I have a retirement account: other_deductions.to_subtract['retirement_account'].exists
     datatype: yesno
-  - What is your retirement account deduction amount?: retirement_account_value
+  - What is your retirement account deduction amount?: other_deductions.to_subtract['retirement_account'].value
     datatype: currency
     required: False
-    show if: retirement_account
-  - I have a another deduction (i.e. Child Support, Deferred Compensation or 401K): other_account_deduction
+    show if: other_deductions.to_subtract['retirement_account'].exists
+  - I have another deduction (i.e. Child Support, Deferred Compensation or 401K): other_deductions.to_subtract['other_account_deduction'].exists
     datatype: yesno
-  - Explain: other_account_deduction_explain
+  - Explain: other_deductions.to_subtract['other_account_deduction'].explain
     required: False
-    show if: other_account_deduction
-  - What is your other deduction amount?: other_account_deduction_value
+    show if: other_deductions.to_subtract['other_account_deduction'].exists
+  - What is your other deduction amount?: other_deductions.to_subtract['other_account_deduction'].value
     datatype: currency
     required: False
-    show if: other_account_deduction
+    show if: other_deductions.to_subtract['other_account_deduction'].exists
 ---
 variable name: non_wage_income_terms
 data: !!omap
@@ -464,20 +470,52 @@ fields:
   - Do you have any other money accounts?: money_accounts.there_is_another
     datatype: yesnoradio
 ---
-id: collect other assets
+id: tax_deferred_annuity_plans.there_are_any
 question: |
-  About your other assets
+  Tax Deferred Annuity Plans
 fields:
-  - I have tax deferred annuity plan(s): tax_deferred_annuity_plans
-    datatype: yesno
-  - Current value: tax_deferred_annuity_plans_value
+  - Do you have any tax deferred annuity plan(s): tax_deferred_annuity_plans.there_are_any
+    datatype: yesnoradio
+---
+id: collect tax_deferred_annuity_plans
+question: |
+  About your ${ ordinal(i) } tax deferred annuity plan
+fields:
+  - Current value: tax_deferred_annuity_plans[i].market_value
     datatype: currency
-    show if: tax_deferred_annuity_plans
-  - I have life insurance: life_insurance 
-    datatype: yesno
-  - Current value: life_insurance_value
+  - Do you have another tax deferred annuity plan?: tax_deferred_annuity_plans.there_is_another
+    datatype: yesnoradio
+---
+id: life_insurance_plans.there_are_any
+question: |
+  Life Insurance
+fields:
+  - Do you have life insurance: life_insurance_plans.there_are_any
+    datatype: yesnoradio
+---
+id: collect life_insurance_plans
+question: |
+  About your ${ ordinal(i) } life insurance plan
+fields:
+  - Current value: life_insurance_plans[i].market_value
     datatype: currency
-    show if: life_insurance
+  - Do you have another life insurance?: life_insurance_plans.there_is_another
+    datatype: yesnoradio
+#---
+#id: collect other assets
+#question: |
+#  About your other assets
+#fields:
+#  - I have tax deferred annuity plan(s): tax_deferred_annuity_plans
+#    datatype: yesno
+#  - Current value: tax_deferred_annuity_plans_value
+#    datatype: currency
+#    show if: tax_deferred_annuity_plans
+#  - I have life insurance: life_insurance 
+#    datatype: yesno
+#  - Current value: life_insurance_value
+#    datatype: currency
+#    show if: life_insurance
 ---
 id: other_assets.there_are_any
 question: |
