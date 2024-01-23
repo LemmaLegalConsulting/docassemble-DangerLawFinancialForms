@@ -407,6 +407,33 @@ fields:
   - Do you own any other properties?: all_real_estate.there_is_another
     datatype: yesnoradio
 ---
+id: how many creditors
+question: | 
+  How many creditors do you have?
+fields:
+  - Creditors: creditor_number
+    datatype: integer
+---
+### pretending that market_value is weekly payment for now
+id: creditor information
+question: | 
+  % if creditors.target_number > 1:
+  Tell us about your ${ ordinal(i) } creditor.
+  % else:
+  Tell us about your creditor.
+  % endif
+subquestion: | 
+  Don't list anything you already listed in youre weekly expenses here.
+fields:
+  - Creditor's name: creditors[i].name
+  - Nature of debt: creditors[i].nature_of_debt
+  - Date incurred: creditors[i].date_incurred
+    datatype: date
+  - Amount due: creditors[i].balance
+    datatype: currency
+  - Weekly payment: creditors[i].market_value
+    datatype: currency
+---
 ##should individual's mvs props be listed?
 id: motor_vehicles.there_are_any
 question: |
@@ -495,7 +522,7 @@ question: |
 fields:
   - Current value: life_insurance_plans[i].market_value
     datatype: currency
-  - Do you have another life insurance?: life_insurance_plans.there_is_another
+  - Do you have another life insurance plan?: life_insurance_plans.there_is_another
     datatype: yesnoradio
 #---
 #id: collect other assets

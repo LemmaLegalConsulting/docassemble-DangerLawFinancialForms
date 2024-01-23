@@ -75,8 +75,8 @@ objects:
   - other_parties: ALPeopleList.using(ask_number=True,target_number=1)
   - employers: JobList.using(ask_number=True,target_number=employer_number,
         complete_attribute='period')
-  - creditors: ALIncomeList.using(ask_number=True,target_number=creditor_number,
-        complete_attribute='weekly_payment')
+  - creditors: ALAssetList.using(ask_number=True,target_number=creditor_number,
+        complete_attribute='market_value')
   - attoneys: ALPeopleList
   - jobs: ALItemizedJobList.using(complete_attribute='complete', ask_number=True)
   - other_incomes: ALIncomeList.using(complete_attribute='complete')
@@ -90,8 +90,8 @@ objects:
   - tax_deferred_annuity_plans: ALAssetList.using(complete_attribute='market_value')
   - life_insurance_plans: ALAssetList.using(complete_attribute='market_value')
 ---
-sections:
-  - review_Financial_statement_short_form: Review your answers
+#sections:
+#  - review_Financial_statement_short_form: Review your answers
 ---
 #################### Interview order #####################
 comment: |
@@ -100,7 +100,7 @@ id: interview_order_Financial_statement_short_form
 code: |
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["Financial_statement_short_form"]["allowed courts"]
-  nav.set_section('review_Financial_statement_short_form')
+  #nav.set_section('review_Financial_statement_short_form')
   # Below sets the user_role by asking a question.
   # You can set user_role directly instead to either 'plaintiff' or 'defendant'
   if gross_annual_income >= 75000:
@@ -386,40 +386,13 @@ fields:
   - Employers: employer_number
     datatype: integer
 ---
-id: how many creditors
-question: | 
-  How many creditors do you have?
-fields:
-  - Creditors: creditor_number
-    datatype: integer
----
-id: creditor information
-generic object: Individual
-question: | 
-  % if creditors.target_number > 1:
-  Tell me about your ${ ordinal(i) } creditor.
-  % else:
-  Tell me about your creditor.
-  % endif
-subquestion: | 
-  Don't list anything you already listed in youre weekly expenses here.
-fields:
-  - Creditor's name: creditors[i].name
-  - Nature of debt: creditors[i].nature_of_debt
-  - Date incurred: creditors[i].date_incurred
-    datatype: date
-  - Amount due: creditors[i].amount_due
-    datatype: currency
-  - Weekly payment: creditors[i].weekly_payment
-    datatype: currency
----
 id: Employer information
 generic object: Individual
 question: | 
   % if employers.target_number > 1:
-  Tell me about your ${ ordinal(i) } job.
+  Tell us about your ${ ordinal(i) } job.
   % else:
-  Tell me about your job.
+  Tell us about your job.
   % endif
 subquestion: |  
   Look at your most recent pay stubs.
@@ -523,14 +496,17 @@ subquestion: |
   Here is a preview of the form you will sign on the next page.   
   
   ${ al_court_bundle.as_pdf(key='preview') }
-
-  Click the image to open it in a new tab. Click the "Make changes" button
-  to edit your answers.
-
-  ${ action_button_html(url_action('review_Financial_statement_short_form'), label='Make changes', color='info') }
   
   Remember to come back to this window to continue and sign your form.
 continue button field: Financial_statement_short_form_preview_question    
+---
+#  Click the image to open it in a new tab. Click the "Make changes" button
+#  to edit your answers.
+#
+#  ${ action_button_html(url_action('review_Financial_statement_short_form'), label='Make changes', color='info') }
+#  View, download and send your form below. Click the "Make changes" button to fix any mistakes.
+#
+#  ${ action_button_html(url_action('review_Financial_statement_short_form'), label='Make changes', color='info') }
 ---
 code: |
   signature_fields = ['users[0].signature']
@@ -542,10 +518,6 @@ question: |
 subquestion: |
   Thank you ${users}. Your form is ready to download and deliver.
   
-  View, download and send your form below. Click the "Make changes" button to fix any mistakes.
-
-  ${ action_button_html(url_action('review_Financial_statement_short_form'), label='Make changes', color='info') }
-  
   
   ${ al_user_bundle.download_list_html() }
   
@@ -555,21 +527,41 @@ subquestion: |
 progress: 100
 ---
 objects:
-  - Financial_statement_short_form_post_interview_instructions: ALDocument.using(title="Instructions", filename="Financial_statement_short_form_next_steps.docx", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - Financial_statement_short_form_attachment: ALDocument.using(title="Probate and Family Court Financial statement (short form) (CJD 301S)", filename="Financial_statement_short_form_CJD-301S_fillable.pdf", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - Financial_statement_short_form_attachment: ALDocument.using(title="Probate and Family Court Financial statement (short form) (CJD 301S)", filename="Financial_statement_short_form_CJD-301S_fillable.pdf", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+---
+objects:
+  - Financial_statement_short_form_post_interview_instructions: ALDocument.using(title="Instructions", filename="Financial_statement_short_form_next_steps.docx", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+---
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[Financial_statement_short_form_attachment], filename="Financial_statement_short_form_package.pdf", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[Financial_statement_short_form_attachment], filename="Financial_statement_short_form_package.pdf", title="All forms to download for your records", enabled=True)
 ---
 attachment:
   variable name: Financial_statement_short_form_attachment.addendum
   docx template file: Financial_statement_short_form_addendum.docx
 ---
 code: |
+  Financial_statement_short_form_attachment.overflow_fields['employers'].overflow_trigger = 2
+  Financial_statement_short_form_attachment.overflow_fields['employers'].label = "Employers"
   Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].overflow_trigger = 60
   Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].label = "Other income sources"
-  Financial_statement_short_form_attachment.overflow_fields.gathered = True  
----
-objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[Financial_statement_short_form_post_interview_instructions,Financial_statement_short_form_attachment], filename="Financial_statement_short_form_package.pdf", title="All forms to download for your records", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[Financial_statement_short_form_attachment], filename="Financial_statement_short_form_package.pdf", title="All forms to download for your records", enabled=True)
+  Financial_statement_short_form_attachment.overflow_fields['federal_tax_exemptions'].overflow_trigger = 2
+  Financial_statement_short_form_attachment.overflow_fields['federal_tax_exemptions'].label = "Federal Tax Exepmtions"
+  Financial_statement_short_form_attachment.overflow_fields['state_tax_exemptions'].overflow_trigger = 2
+  Financial_statement_short_form_attachment.overflow_fields['state_tax_exemptions'].label = "State Tax Exepmtions"
+  Financial_statement_short_form_attachment.overflow_fields['creditors'].overflow_trigger = 4
+  Financial_statement_short_form_attachment.overflow_fields['creditors'].label = "Creditors"
+  Financial_statement_short_form_attachment.overflow_fields['all_real_estate'].overflow_trigger = 2
+  Financial_statement_short_form_attachment.overflow_fields['all_real_estate'].label = "Real Estate"
+  Financial_statement_short_form_attachment.overflow_fields['motor_vehicles'].overflow_trigger = 3
+  Financial_statement_short_form_attachment.overflow_fields['motor_vehicles'].label = "Motor Vehicles"
+  Financial_statement_short_form_attachment.overflow_fields['retirement_accounts'].overflow_trigger = 4
+  Financial_statement_short_form_attachment.overflow_fields['retirement_accounts'].label = "Retirement Accounts"
+  Financial_statement_short_form_attachment.overflow_fields['money_accounts'].overflow_trigger = 4
+  Financial_statement_short_form_attachment.overflow_fields['money_accounts'].label = "Money Accounts"
+  Financial_statement_short_form_attachment.overflow_fields['other_assets'].overflow_trigger = 3
+  Financial_statement_short_form_attachment.overflow_fields['other_assets'].label = "Other Assets"
+  Financial_statement_short_form_attachment.overflow_fields.gathered = True
 ---
 attachments:
   - name: Financial statement short form post interview instructions
@@ -615,82 +607,70 @@ attachments:
       - "creditor3": ${ creditors[3].name }
       - "liability_incurred": ${ creditors[0].date_incurred }
       - "liability_weekly_payment_amount": |
-          % if len(creditors) == 1:
-          ${ currency(creditors[0].weekly_payment, symbol='') }
+          % if creditors[0].name:
+          ${ currency(creditors[0].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "liability": ${ creditors[0].nature_of_debt }
       - "liability_due_value":  |
-          % if len(creditors) == 1:
-          ${ currency(creditors[0].amount_due, symbol='') }
+          % if creditors[0].name:
+          ${ currency(creditors[0].balance, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "liability1_weekly_payment_amount": |
-          % if len(creditors) == 2:
-          ${ currency(creditors[1].weekly_payment, symbol='') }
+          % if creditors[1].name:
+          ${ currency(creditors[1].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "liability1": ${ creditors[1].nature_of_debt }
       - "liability1_incurred": ${ creditors[1].date_incurred }
       - "liability1_due_value":  |
-          % if len(creditors) == 2:
-          ${ currency(creditors[1].amount_due, symbol='') }
+          % if creditors[1].name:
+          ${ currency(creditors[1].balance, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "liability2": ${ creditors[2].nature_of_debt }
       - "liability2_weekly_payment_amount":  |
-          % if len(creditors) == 3:
-          ${ currency(creditors[2].weekly_payment, symbol='') }
+          % if creditors[2].name:
+          ${ currency(creditors[2].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "liability2_incurred": ${ creditors[2].date_incurred }
       - "liability2_due_value":  |
-          % if len(creditors) == 3:
-          ${ currency(creditors[2].amount_due, symbol='') }
+          % if creditors[2].name:
+          ${ currency(creditors[2].balance, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif }
       - "liability3_weekly_payment_amount":  |
-          % if len(creditors) == 4:
-          ${ currency(creditors[3].weekly_payment, symbol='') }
+          % if creditors[3].name:
+          ${ currency(creditors[3].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "liability3": ${ creditors[3].nature_of_debt }
       - "liability3_incurred": ${ creditors[3].date_incurred }
       - "liability3_due_value":   |
-          % if len(creditors) == 4:
-          ${ currency(creditors[3].amount_due, symbol='') }
+          % if creditors[3].name:
+          ${ currency(creditors[3].balance, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "liabilities_total_due_value": |
-          % if len(creditors) == 1:
-          ${ currency(creditors[0].amount_due, symbol='') }
-          % elif len(creditors) == 2:
-          ${ currency(creditors[0].amount_due + creditors[1].amount_due, symbol='') }
-          % elif len(creditors) == 3:
-          ${ currency(creditors[0].amount_due + creditors[1].amount_due + creditors[2].amount_due, symbol='') }
-          % elif len(creditors) == 4:
-          ${ currency(creditors[0].amount_due + creditors[1].amount_due + creditors[2].amount_due + creditors[4].amount_due, symbol='') }
-          % else: 
+          % if creditors.there_are_any:
+          ${ currency(creditors.balance(), symbol='') }
+          % else:
           ${ currency(0.00, symbol='') }
           % endif
       - "liabilities_total_weekly_payment_amount": |
-          % if len(creditors) == 1:
-          ${ currency(creditors[0].weekly_payment, symbol='') }
-          % elif len(creditors) == 2:
-          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment, symbol='') }
-          % elif len(creditors) == 3:
-          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment + creditors[2].weekly_payment, symbol='') }
-          % elif len(creditors) == 4:
-          ${ currency(creditors[0].weekly_payment + creditors[1].weekly_payment + creditors[2].weekly_payment + creditors[4].weekly_payment, symbol='') }
-          % else: 
+          % if creditors.there_are_any:
+          ${ currency(creditors.market_value(), symbol='') }
+          % else:
           ${ currency(0.00, symbol='') }
           % endif
       - "signature_date": ${ signature_date }
@@ -825,16 +805,36 @@ attachments:
           % endfor
       - "expense_clothing_amount": ${ currency(expenses.total(times_per_year=52, source='clothes'), symbol='') }
       - "total_weekly_expenses_amount": ${ currency(expenses.total(times_per_year=52), symbol='') }
-      - "legal_fees_amount": ${ currency(retainer_amounts, symbol='') }
-      - "legal_fees_incurred_to_date_against_retainer_amount": ${ currency(legal_fees, symbol='') }
-      - "legal_fees_total_miniimum_amount": ${ currency(lowest_total, symbol='') }
-      - "legal_fees_total_maximum_amount": ${ currency(highest_total, symbol='') }
+      - "legal_fees_amount": |
+          % if user_represented:
+          ${ currency(retainer_amounts, symbol='') }
+          % else: 
+          ${ currency(0.00, symbol='') }
+          % endif
+      - "legal_fees_incurred_to_date_against_retainer_amount": |
+          % if user_represented:
+          ${ currency(legal_fees, symbol='') }
+          % else: 
+          ${ currency(0.00, symbol='') }
+          % endif
+      - "legal_fees_total_miniimum_amount": |
+          % if user_represented:
+          ${ currency(lowest_total, symbol='') }
+          % else: 
+          ${ currency(0.00, symbol='') }
+          % endif
+      - "legal_fees_total_maximum_amount": |
+          % if user_represented:
+          ${ currency(highest_total, symbol='') }
+          % else: 
+          ${ currency(0.00, symbol='') }
+          % endif
       - "assets_real_estate_address": ${ all_real_estate[0].address }
       - "assets_real_estate_name_on_title": ${ all_real_estate[0].title_holders }
       - "assets_real_estate_fair_market_value": ${ currency(all_real_estate[0].market_value, symbol='') }
       - "assets_real_estate_mortgage_value": ${ currency(all_real_estate[0].balance, symbol='') }
       - "assets_real_estate_equity_value": |
-          % if len(all_real_estate) == 1:
+          % if all_real_estate[0].balance:
           ${ currency(all_real_estate[0].equity(), symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -842,7 +842,7 @@ attachments:
       - "assets_motor_vehicle_fair_market_value": ${ currency(motor_vehicles[0].market_value, symbol='') }
       - "assets_motor_vehicle_loan_amount": ${ currency(motor_vehicles[0].balance, symbol='') }
       - "assets_motor_vehicle_equity_value": |
-          % if len(motor_vehicles) == 1:
+          % if motor_vehicles[0].balance:
           ${ currency(motor_vehicles[0].equity(), symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -850,25 +850,25 @@ attachments:
       - "assets_motor_vehicle1_fair_market_value": ${ currency(motor_vehicles[1].market_value, symbol='') }
       - "assets_motor_vehicle1_loan_amount": ${ currency(motor_vehicles[1].balance, symbol='') }
       - "assets_motor_vehicle1_equity_value": |
-          % if len(motor_vehicles) == 2:
+          % if motor_vehicles[1].balance:
           ${ currency(motor_vehicles[1].equity(), symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_retirement_plan_value": |
-          % if len(retirement_accounts) == 1:
+          % if retirement_accounts[0].market_value:
           ${ currency(retirement_accounts[0].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_retirement_plan1_value": |
-          % if len(retirement_accounts) == 2:
+          % if retirement_accounts[1].market_value:
           ${ currency(retirement_accounts[1].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_retirement_plan2_value": |
-          % if len(retirement_accounts) == 3:
+          % if retirement_accounts[2].market_value:
           ${ currency(retirement_accounts[2].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -882,7 +882,7 @@ attachments:
       - "assets_account_name_and_number": |
           ${ money_accounts[0].name } ${ money_accounts[0].account_number }
       - "assets_account_value": |
-          % if len(money_accounts) == 1:
+          % if money_accounts[0].market_value:
           ${ currency(money_accounts[0].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -890,7 +890,7 @@ attachments:
       - "assets_account_name_and_number1": |
           ${ money_accounts[1].name } ${ money_accounts[1].account_number }
       - "assets_account_value1": |
-          % if len(money_accounts) == 2:
+          % if money_accounts[1].market_value:
           ${ currency(money_accounts[1].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -898,21 +898,21 @@ attachments:
       - "assets_account_name_and_number2": |
           ${ money_accounts[2].name } ${ money_accounts[2].account_number }
       - "assets_account_value2": |
-          % if len(money_accounts) == 3:
+          % if money_accounts[2].market_value:
           ${ currency(money_accounts[2].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_stocks_and_bonds": ${ other_assets[0].name }
       - "assets_stocks_and_bonds_value": |
-          % if len(other_assets) == 1:
+          % if other_assets[0].market_value:
           ${ currency(other_assets[0].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_stocks_and_bonds1": ${ other_assets[1].name }
       - "assets_stocks_and_bonds_value1": |
-          % if len(other_assets) == 2:
+          % if other_assets[1].market_value:
           ${ currency(other_assets[1].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
