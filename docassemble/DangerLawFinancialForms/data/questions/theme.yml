@@ -1,0 +1,31 @@
+---
+code: |
+  AL_ORGANIZATION_TITLE = "Danger Law Forms"
+  AL_ORGANIZATION_HOMEPAGE = "https://dangerlaw.com/"
+  AL_DEFAULT_STATE = "MA"
+  AL_DEFAULT_COUNTRY = "US"
+---
+objects:
+  - al_logo: DAStaticFile.using(filename="LogoWithTagline.png")
+---
+code: |
+  al_form_type = "other" 
+---
+metadata:
+  title: >-
+    Financial Forms 
+  short title: >-
+    Financial Forms 
+  description: |-
+    Financial Forms 
+  tags: []
+  authors:
+    - Lemma Legal
+    - Mia Bonardi
+    - Plocket
+---
+features:
+  progress bar: False
+---
+default screen parts:
+  pre: |
