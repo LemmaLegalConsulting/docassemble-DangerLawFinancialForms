@@ -44,7 +44,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.DangerLawFinancialForms',
-      version='1.1',
+      version='1.2',
       description=('Financial Forms for the Danger Law Firm'),
       long_description='# docassemble.DangerLawFinancialForms\r\n\r\nFinancial Forms for the Danger Law Firm\r\n\r\n## Authors\r\n  - Lemma Legal\r\n  - Mia Bonardi\r\n  - Plocket\r\n  - Caroline Robinson\r\n  - Lily Yang\r\n  - Jeff Wolf\r\n  - Oonagh Doherty\r\n\r\n',
       long_description_content_type='text/markdown',
