@@ -43,19 +43,19 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
                 out.setdefault(package, []).append(prefix+name)
     return out
 
-setup(name='docassemble.FinancialStatementShortForm',
+setup(name='docassemble.DangerLawFinancialForms',
       version='1.1',
-      description=('Probate and Family Court Financial statement (short form) (CJD 301S)'),
-      long_description='# docassemble.FinancialStatementShortForm\r\n\r\nProbate and Family Court Financial statement (short form) (CJD 301S)\r\n\r\n## Authors\r\n  - Lemma Legal\r\n  - Mia Bonardi\r\n  - Plocket\r\n  - Caroline Robinson\r\n  - Lily Yang\r\n  - Jeff Wolf\r\n  - Oonagh Doherty\r\n\r\n',
+      description=('Financial Forms for the Danger Law Firm'),
+      long_description='# docassemble.DangerLawFinancialForms\r\n\r\nFinancial Forms for the Danger Law Firm\r\n\r\n## Authors\r\n  - Lemma Legal\r\n  - Mia Bonardi\r\n  - Plocket\r\n  - Caroline Robinson\r\n  - Lily Yang\r\n  - Jeff Wolf\r\n  - Oonagh Doherty\r\n\r\n',
       long_description_content_type='text/markdown',
       author='Lemma Legal',
       author_email='info@lemmalegal.com',
       license='The MIT License',
-      url='https://courtformsonline.org',
+      url='https://dangerlaw.com/',
       packages=find_packages(),
       namespace_packages=['docassemble'],
       install_requires=['docassemble.ALMassachusetts>=0.1.2', 'docassemble.AssemblyLine>=2.26.0', 'docassemble.MassAccess>=0.4.1'],
       zip_safe=False,
-      package_data=find_package_data(where='docassemble/FinancialStatementShortForm/', package='docassemble.FinancialStatementShortForm'),
+      package_data=find_package_data(where='docassemble/DangerLawFinancialForms/', package='docassemble.DangerLawFinancialForms'),
      )
 
