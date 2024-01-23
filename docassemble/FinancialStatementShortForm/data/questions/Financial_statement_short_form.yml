@@ -540,15 +540,16 @@ attachment:
   variable name: Financial_statement_short_form_attachment.addendum
   docx template file: Financial_statement_short_form_addendum.docx
 ---
+#  Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].overflow_trigger = 60
+#  Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].label = "Other income sources"
+---
 code: |
   Financial_statement_short_form_attachment.overflow_fields['employers'].overflow_trigger = 2
   Financial_statement_short_form_attachment.overflow_fields['employers'].label = "Employers"
-  Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].overflow_trigger = 60
-  Financial_statement_short_form_attachment.overflow_fields['income_other_sources'].label = "Other income sources"
   Financial_statement_short_form_attachment.overflow_fields['federal_tax_exemptions'].overflow_trigger = 2
-  Financial_statement_short_form_attachment.overflow_fields['federal_tax_exemptions'].label = "Federal Tax Exepmtions"
+  Financial_statement_short_form_attachment.overflow_fields['federal_tax_exemptions'].label = "Federal Tax Exemptions"
   Financial_statement_short_form_attachment.overflow_fields['state_tax_exemptions'].overflow_trigger = 2
-  Financial_statement_short_form_attachment.overflow_fields['state_tax_exemptions'].label = "State Tax Exepmtions"
+  Financial_statement_short_form_attachment.overflow_fields['state_tax_exemptions'].label = "State Tax Exemptions"
   Financial_statement_short_form_attachment.overflow_fields['creditors'].overflow_trigger = 4
   Financial_statement_short_form_attachment.overflow_fields['creditors'].label = "Creditors"
   Financial_statement_short_form_attachment.overflow_fields['all_real_estate'].overflow_trigger = 2
@@ -748,7 +749,7 @@ attachments:
           ${ currency(other_incomes.total(times_per_year=52, source=["household contributions"]), symbol='') }
       - "income_other1_amount": ${ currency(0.00, symbol='') }
       - "income_other2_amount": ${ currency(0.00, symbol='') }
-      - "income_other_sources": ${ Financial_statement_short_form_attachment.safe_value('income_other_sources') }
+      - "income_other_sources": ${ " " }
       - "total_gross_weekly_income_amount": |
           ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52), symbol='') }
       - "exemptions_federal_income_tax": |
@@ -834,7 +835,7 @@ attachments:
       - "assets_real_estate_fair_market_value": ${ currency(all_real_estate[0].market_value, symbol='') }
       - "assets_real_estate_mortgage_value": ${ currency(all_real_estate[0].balance, symbol='') }
       - "assets_real_estate_equity_value": |
-          % if all_real_estate[0].balance:
+          % if defined('all_real_estate[0].balance'):
           ${ currency(all_real_estate[0].equity(), symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -842,7 +843,7 @@ attachments:
       - "assets_motor_vehicle_fair_market_value": ${ currency(motor_vehicles[0].market_value, symbol='') }
       - "assets_motor_vehicle_loan_amount": ${ currency(motor_vehicles[0].balance, symbol='') }
       - "assets_motor_vehicle_equity_value": |
-          % if motor_vehicles[0].balance:
+          % if defined('motor_vehicles[0].balance'):
           ${ currency(motor_vehicles[0].equity(), symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -850,25 +851,25 @@ attachments:
       - "assets_motor_vehicle1_fair_market_value": ${ currency(motor_vehicles[1].market_value, symbol='') }
       - "assets_motor_vehicle1_loan_amount": ${ currency(motor_vehicles[1].balance, symbol='') }
       - "assets_motor_vehicle1_equity_value": |
-          % if motor_vehicles[1].balance:
+          % if defined('motor_vehicles[1].balance'):
           ${ currency(motor_vehicles[1].equity(), symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_retirement_plan_value": |
-          % if retirement_accounts[0].market_value:
+          % if defined('retirement_accounts[0].name'):
           ${ currency(retirement_accounts[0].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_retirement_plan1_value": |
-          % if retirement_accounts[1].market_value:
+          % if defined('retirement_accounts[1].name'):
           ${ currency(retirement_accounts[1].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_retirement_plan2_value": |
-          % if retirement_accounts[2].market_value:
+          % if defined('retirement_accounts[2].name'):
           ${ currency(retirement_accounts[2].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -882,7 +883,7 @@ attachments:
       - "assets_account_name_and_number": |
           ${ money_accounts[0].name } ${ money_accounts[0].account_number }
       - "assets_account_value": |
-          % if money_accounts[0].market_value:
+          % if defined('money_accounts[0].name'):
           ${ currency(money_accounts[0].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -890,7 +891,7 @@ attachments:
       - "assets_account_name_and_number1": |
           ${ money_accounts[1].name } ${ money_accounts[1].account_number }
       - "assets_account_value1": |
-          % if money_accounts[1].market_value:
+          % if defined('money_accounts[1].name'):
           ${ currency(money_accounts[1].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
@@ -898,21 +899,21 @@ attachments:
       - "assets_account_name_and_number2": |
           ${ money_accounts[2].name } ${ money_accounts[2].account_number }
       - "assets_account_value2": |
-          % if money_accounts[2].market_value:
+          % if defined('money_accounts[2].name'):
           ${ currency(money_accounts[2].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_stocks_and_bonds": ${ other_assets[0].name }
       - "assets_stocks_and_bonds_value": |
-          % if other_assets[0].market_value:
+          % if defined('other_assets[0].name'):
           ${ currency(other_assets[0].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
           % endif
       - "assets_stocks_and_bonds1": ${ other_assets[1].name }
       - "assets_stocks_and_bonds_value1": |
-          % if other_assets[1].market_value:
+          % if defined('other_assets[1].name'):
           ${ currency(other_assets[1].market_value, symbol='') }
           % else: 
           ${ currency(0.00, symbol='') }
