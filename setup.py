@@ -44,7 +44,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.FinancialStatementShortForm',
-      version='1.0',
+      version='1.1',
       description=('Probate and Family Court Financial statement (short form) (CJD 301S)'),
       long_description='# docassemble.FinancialStatementShortForm\r\n\r\nProbate and Family Court Financial statement (short form) (CJD 301S)\r\n\r\n## Authors\r\n  - Lemma Legal\r\n  - Mia Bonardi\r\n  - Plocket\r\n  - Caroline Robinson\r\n  - Lily Yang\r\n  - Jeff Wolf\r\n  - Oonagh Doherty\r\n\r\n',
       long_description_content_type='text/markdown',
