@@ -4,14 +4,15 @@ include:
   - docassemble.ALToolbox:al_income.yml
   - docassemble.ALMassachusetts:al_massachusetts.yml
   - docassemble.MassAccess:massaccess.yml
+  - theme.yml
   - al_income_custom.yml
   - review.yml
 ---
 metadata:
   title: |
-    Probate and Family Court Financial statement (short form) (CJD 301S)
+    Financial Statement
   short title: |
-    Financial Statement (short form)
+    Short Form
   tags:
     - FA-00-00-00-00
   authors:
@@ -22,53 +23,6 @@ metadata:
     - Lily Yang
     - Jeff Wolf
     - Oonagh Doherty
----
-mandatory: True
-comment: |
-  This contains metadata that will not be overwritten if this YAML file is included in another
-  file. Each file gets its own key in the interview_metadata dictionary.
-  Most keys are not currently used at runtime, other than "allowed courts".
-code: |
-  interview_metadata
-  if not defined("interview_metadata['Financial_statement_short_form']"):
-    interview_metadata.initializeObject("Financial_statement_short_form")
-    interview_metadata["Financial_statement_short_form"].update({
-      "al_weaver_version": "1.5.0",
-      "generated on": "2022-01-16",
-      "title": "Probate and Family Court Financial statement (short form) (CJD 301S)",
-      "short title": "Financial Statement (short form)",
-      "description": "You must file this form in all cases in the Probate and Family Court where money or support is an issue and your annual income is less than $75,000.",
-      "original_form": "https://courtforms.jud.state.ma.us/publicforms/PFC0002",
-      "allowed courts": [
-        "Probate and Family Court",
-      ],
-      "categories": [
-        "FA-00-00-00-00",
-      ],        
-      "logic block variable": "interview_order_Financial_statement_short_form",
-      "attachment block variable": "Financial_statement_short_form_attachment",
-      "typical role": "unknown",
-    })
----
-code: |
-  interview_metadata['main_interview_key'] =  'Financial_statement_short_form'
----
-code: |
-  # This controls the default country and list of states in address field questions
-  AL_DEFAULT_COUNTRY = "US"
----
-code: |
-  # This controls the default state in address field questions
-  AL_DEFAULT_STATE = "MA"
----
-code: |
-  github_repo_name =  'docassemble-FinancialStatementShortForm'
----
-code: |
-  interview_short_title = "Describe your financial situation"
----
-code: |
-  al_form_type = 'other'
 ---
 objects:
   - users: ALPeopleList.using(ask_number=True,target_number=1)
@@ -99,7 +53,7 @@ comment: |
 id: interview_order_Financial_statement_short_form
 code: |
   # Set the allowed courts for this interview
-  allowed_courts = interview_metadata["Financial_statement_short_form"]["allowed courts"]
+  #allowed_courts = interview_metadata["Financial_statement_short_form"]["allowed courts"]
   #nav.set_section('review_Financial_statement_short_form')
   # Below sets the user_role by asking a question.
   # You can set user_role directly instead to either 'plaintiff' or 'defendant'
@@ -170,7 +124,7 @@ comment: |
   Delete mandatory: True to include in another interview
 mandatory: True
 code: |
-  al_intro_screen
+  #al_intro_screen
   Financial_statement_short_form_intro
   interview_order_Financial_statement_short_form
   signature_date
