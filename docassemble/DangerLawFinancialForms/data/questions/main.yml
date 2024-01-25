@@ -33,6 +33,7 @@ objects:
         complete_attribute='market_value')
   - attoneys: ALPeopleList
   - jobs: ALItemizedJobList.using(complete_attribute='complete', ask_number=True)
+  - jobs[i].other_incomes: ALIncomeList.using(complete_attribute='complete')
   - other_incomes: ALIncomeList.using(complete_attribute='complete')
   - expenses: ALExpenseList.using(complete_attribute='complete')
   - assets: ALAssetList.using(complete_attribute='complete')
