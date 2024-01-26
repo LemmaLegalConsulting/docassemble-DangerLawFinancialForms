@@ -20,6 +20,8 @@ code: |
     x.to_add["self employment"].exists = True
     x.is_hourly = None
     x.is_part_time = False
+    x.to_add['self employment'].value
+    x.to_add.there_is_another = False
   else:
     x.to_add["self employment"].exists = False
     x.times_per_year
@@ -27,6 +29,9 @@ code: |
       x.to_add["part time"].is_hourly = x.is_hourly
     else:
       x.to_add["full time"].is_hourly = x.is_hourly
+      x.to_add["bonuses"].exists
+      x.to_add.there_is_another = False
+      x.to_add.complete = True
   x.to_add.gather()
   x.other_income_sources.gather()
   x.add_required_taxes
@@ -48,14 +53,6 @@ code: |
 ---
 generic object: ALItemizedJob 
 code: |
-  if x.to_add[i] == 'bonuses':
-    x.to_add.there_is_another = False
-  if x.to_add[i] == 'overtime':
-    x.to_add.there_is_another = False
-  if x.to_add[i] == 'tips':
-    x.to_add.there_is_another = False
-  if x.to_add[i] == 'commissions':
-    x.to_add.there_is_another = False
   if x.to_add[i].exists:
     x.to_add[i].value
   x.to_add[i].complete = True
@@ -472,7 +469,7 @@ fields:
     datatype: currency
   - Weekly payment: creditors[i].market_value
     datatype: currency
-  - Do you have any other creditors?: creditors[i].there_is_another
+  - Do you have any other creditors?: creditors.there_is_another
     datatype: yesnoradio
 ---
 ##should individual's mvs props be listed?
