@@ -33,7 +33,7 @@ objects:
         complete_attribute='market_value')
   - attoneys: ALPeopleList
   - jobs: ALItemizedJobList.using(complete_attribute='complete', ask_number=True)
-  - jobs[i].other_incomes: ALIncomeList.using(complete_attribute='complete')
+  - jobs[i].other_income_sources: ALIncomeList.using(complete_attribute='complete')
   - other_incomes: ALIncomeList.using(complete_attribute='complete')
   - expenses: ALExpenseList.using(complete_attribute='complete')
   - assets: ALAssetList.using(complete_attribute='complete')
@@ -702,11 +702,16 @@ attachments:
           ${ currency(other_incomes.total(times_per_year=52, source=["royalties"]), symbol='') }
       - "income_household_member_contributions_amount": | 
           ${ currency(other_incomes.total(times_per_year=52, source=["household contributions"]), symbol='') }
-      - "income_other1_amount": ${ currency(0.00, symbol='') }
-      - "income_other2_amount": ${ currency(0.00, symbol='') }
-      - "income_other_sources": ${ " " }
+      - "income_other1_amount": ${ currency(jobs[0].other_income_sources.total(times_per_year=52), symbol='') }
+      - "income_other2_amount": ${ currency(jobs[1].other_income_sources.total(times_per_year=52), symbol='') }
+      - "income_other_sources": |
+          % for job in jobs: 
+          % for other in job.other_income_sources:
+          ${ other.source }
+          % endfor
+          % endfor
       - "total_gross_weekly_income_amount": |
-          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52), symbol='') }
+          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52) + (job.other_income_sources.total(times_per_year=52) for job in jobs), symbol='') }
       - "exemptions_federal_income_tax": |
           ${ comma_and_list(federal_tax_exemptions.true_values()) }
       - "deductions_federal_income_tax_amount": |

@@ -28,16 +28,10 @@ code: |
     else:
       x.to_add["full time"].is_hourly = x.is_hourly
   x.to_add.gather()
-  x.other_incomes.gather()
+  x.other_income_sources.gather()
   x.add_required_taxes
   x.to_subtract.gather()
   x.complete = True
-#---
-#generic object: ALItemizedJob 
-#code: |
-#  jobs.other_incomes.gather()
-#  x.other_incomes[i].complete = True
-# jobs[0].other_incomes.total(...)
 ---
 generic object: ALItemizedJob 
 code: |
@@ -149,7 +143,7 @@ fields:
     code: |
       times_per_year_list
     datatype: integer
-  - The job has other incomes: x.other_incomes.there_are_any
+  - The job has other incomes: x.other_income_sources.there_are_any
     datatype: yesno
 ---
 id: itemized job line items
@@ -201,12 +195,12 @@ fields:
     datatype: currency
     show if: x.to_add['bonuses'].exists
     required: False
-  - The job has other incomes: x.other_incomes.there_are_any
+  - The job has other incomes: x.other_income_sources.there_are_any
     datatype: yesno
 ---
 #generic object: ALJobsList
 #question: |
-#  Tell us about your ${ ordinal(j) } other income for ${ jobs[i].other_incomes[j].source }
+#  Tell us about your ${ ordinal(j) } other income for ${ jobs[i].other_income_sources[j].source }
 #---
 id: income info for list
 generic object: ALIncomeList
@@ -509,11 +503,11 @@ fields:
 ---
 id: money_accounts.there_are_any
 question: |
-  Money Accounts
+  Checking, Savings, and similar bank accounts
 subquestion: |
   Select "Yes" if you have Savings & Checking Accounts, Money Market Accounts, Certificates of Deposit-which are held individually, jointly, in the name of another person for your benefit, or held by you for the benefit of your minor child(ren)
 fields:
-  - Do you have any money accounts?: money_accounts.there_are_any
+  - Do you have any Checking, Savings, and similar bank accounts?: money_accounts.there_are_any
     datatype: yesnoradio
 ---
 id: collect money_accounts
