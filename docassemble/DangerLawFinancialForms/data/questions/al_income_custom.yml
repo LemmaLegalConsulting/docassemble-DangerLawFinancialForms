@@ -29,14 +29,16 @@ code: |
       x.to_add["part time"].is_hourly = x.is_hourly
     else:
       x.to_add["full time"].is_hourly = x.is_hourly
-      x.to_add["bonuses"].exists
-      x.to_add.there_is_another = False
-      x.to_add.complete = True
   x.to_add.gather()
   x.other_income_sources.gather()
   x.add_required_taxes
   x.to_subtract.gather()
   x.complete = True
+---
+generic object: ALItemizedJob 
+code: |
+  x.to_add.there_are_any = True
+  x.to_add.there_is_another = False
 ---
 generic object: ALItemizedJob 
 code: |
@@ -53,6 +55,8 @@ code: |
 ---
 generic object: ALItemizedJob 
 code: |
+  if not x.is_self_employed:
+    x.to_add["bonuses"].exists
   if x.to_add[i].exists:
     x.to_add[i].value
   x.to_add[i].complete = True
