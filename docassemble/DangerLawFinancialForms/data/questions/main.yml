@@ -29,10 +29,11 @@ objects:
   - other_parties: ALPeopleList.using(ask_number=True,target_number=1)
   - employers: JobList.using(ask_number=True,target_number=employer_number,
         complete_attribute='period')
-  - creditors: ALAssetList.using(ask_number=True,target_number=creditor_number,
-        complete_attribute='market_value')
+  - creditors: ALAssetList.using(complete_attribute='market_value')
   - attoneys: ALPeopleList
   - jobs: ALItemizedJobList.using(complete_attribute='complete', ask_number=True)
+  - jobs[i].other_income_sources: ALIncomeList.using(complete_attribute='complete')
+  - other_income_sources: ALIncomeList.using(complete_attribute='complete')
   - other_incomes: ALIncomeList.using(complete_attribute='complete')
   - expenses: ALExpenseList.using(complete_attribute='complete')
   - assets: ALAssetList.using(complete_attribute='complete')
@@ -53,7 +54,7 @@ comment: |
 id: interview_order_Financial_statement_short_form
 code: |
   # Set the allowed courts for this interview
-  #allowed_courts = interview_metadata["Financial_statement_short_form"]["allowed courts"]
+  allowed_courts = ["Probate and Family Court"]
   #nav.set_section('review_Financial_statement_short_form')
   # Below sets the user_role by asking a question.
   # You can set user_role directly instead to either 'plaintiff' or 'defendant'
@@ -701,11 +702,16 @@ attachments:
           ${ currency(other_incomes.total(times_per_year=52, source=["royalties"]), symbol='') }
       - "income_household_member_contributions_amount": | 
           ${ currency(other_incomes.total(times_per_year=52, source=["household contributions"]), symbol='') }
-      - "income_other1_amount": ${ currency(0.00, symbol='') }
-      - "income_other2_amount": ${ currency(0.00, symbol='') }
-      - "income_other_sources": ${ " " }
+      - "income_other1_amount": ${ currency(jobs[0].other_income_sources.total(times_per_year=52), symbol='') }
+      - "income_other2_amount": ${ currency(jobs[1].other_income_sources.total(times_per_year=52), symbol='') }
+      - "income_other_sources": |
+          % for job in jobs: 
+          % for other in job.other_income_sources:
+          ${ other.source }
+          % endfor
+          % endfor
       - "total_gross_weekly_income_amount": |
-          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52), symbol='') }
+          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52) + (job.other_income_sources.total(times_per_year=52) for job in jobs), symbol='') }
       - "exemptions_federal_income_tax": |
           ${ comma_and_list(federal_tax_exemptions.true_values()) }
       - "deductions_federal_income_tax_amount": |
