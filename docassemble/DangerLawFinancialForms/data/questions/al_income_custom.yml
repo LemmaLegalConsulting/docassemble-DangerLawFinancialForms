@@ -48,7 +48,13 @@ code: |
 ---
 generic object: ALItemizedJob 
 code: |
-  if i == 'bonuses':
+  if x.to_add[i] == 'bonuses':
+    x.to_add.there_is_another = False
+  if x.to_add[i] == 'overtime':
+    x.to_add.there_is_another = False
+  if x.to_add[i] == 'tips':
+    x.to_add.there_is_another = False
+  if x.to_add[i] == 'commissions':
     x.to_add.there_is_another = False
   if x.to_add[i].exists:
     x.to_add[i].value
@@ -134,7 +140,7 @@ if: x.is_self_employed
 id: self employed collect
 generic object: ALItemizedJob
 question: |
-  Enter info from your paystub for your job as a ${ x.source }
+  Enter info for your job as a ${ x.source }
 fields:
   - What is your self employed income?: x.to_add['self employment'].value
     datatype: currency
@@ -428,6 +434,7 @@ question: |
 fields:
   - Who holds title: all_real_estate[i].title_holders
   - Address of property: all_real_estate[i].address 
+    address autocomplete: True
   - Current fair market value: all_real_estate[i].market_value
     datatype: currency
   - Current outstanding mortgage value(s): all_real_estate[i].balance
@@ -437,10 +444,14 @@ fields:
 ---
 id: how many creditors
 question: | 
-  How many creditors do you have?
+  Do you have any creditors? 
+subquestion: |
+  A creditor is someone or a company that you owe money to. They give you money or things you need and expect you to pay them back later. Examples of creditors are banks, credit card companies, and the people who supply you with stuff.
+  
+  Don't list anything you already listed in your weekly expenses here.
 fields:
-  - Creditors: creditor_number
-    datatype: integer
+  - I have creditors: creditors.there_are_any
+    datatype: yesnoradio
 ---
 ### pretending that market_value is weekly payment for now
 id: creditor information
@@ -451,7 +462,7 @@ question: |
   Tell us about your creditor.
   % endif
 subquestion: | 
-  Don't list anything you already listed in youre weekly expenses here.
+  Don't list anything you already listed in your weekly expenses here.
 fields:
   - Creditor's name: creditors[i].name
   - Nature of debt: creditors[i].nature_of_debt
@@ -461,6 +472,8 @@ fields:
     datatype: currency
   - Weekly payment: creditors[i].market_value
     datatype: currency
+  - Do you have any other creditors?: creditors[i].there_is_another
+    datatype: yesnoradio
 ---
 ##should individual's mvs props be listed?
 id: motor_vehicles.there_are_any

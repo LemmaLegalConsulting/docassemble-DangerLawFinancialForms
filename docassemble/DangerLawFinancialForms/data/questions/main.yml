@@ -29,11 +29,11 @@ objects:
   - other_parties: ALPeopleList.using(ask_number=True,target_number=1)
   - employers: JobList.using(ask_number=True,target_number=employer_number,
         complete_attribute='period')
-  - creditors: ALAssetList.using(ask_number=True,target_number=creditor_number,
-        complete_attribute='market_value')
+  - creditors: ALAssetList.using(complete_attribute='market_value')
   - attoneys: ALPeopleList
   - jobs: ALItemizedJobList.using(complete_attribute='complete', ask_number=True)
   - jobs[i].other_income_sources: ALIncomeList.using(complete_attribute='complete')
+  - other_income_sources: ALIncomeList.using(complete_attribute='complete')
   - other_incomes: ALIncomeList.using(complete_attribute='complete')
   - expenses: ALExpenseList.using(complete_attribute='complete')
   - assets: ALAssetList.using(complete_attribute='complete')
@@ -54,7 +54,7 @@ comment: |
 id: interview_order_Financial_statement_short_form
 code: |
   # Set the allowed courts for this interview
-  #allowed_courts = interview_metadata["Financial_statement_short_form"]["allowed courts"]
+  allowed_courts = ["Probate and Family Court"]
   #nav.set_section('review_Financial_statement_short_form')
   # Below sets the user_role by asking a question.
   # You can set user_role directly instead to either 'plaintiff' or 'defendant'
