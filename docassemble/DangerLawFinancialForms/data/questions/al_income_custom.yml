@@ -457,7 +457,7 @@ fields:
 ### pretending that market_value is weekly payment for now
 id: creditor information
 question: | 
-  % if creditors.target_number > 1:
+  % if len(creditors) > 1:
   Tell us about your ${ ordinal(i) } creditor.
   % else:
   Tell us about your creditor.

@@ -29,7 +29,7 @@ objects:
   - other_parties: ALPeopleList.using(ask_number=True,target_number=1)
   - employers: JobList.using(ask_number=True,target_number=employer_number,
         complete_attribute='period')
-  - creditors: ALAssetList.using(complete_attribute='market_value')
+  - creditors: ALAssetList.using(target_number=1, complete_attribute='market_value')
   - attoneys: ALPeopleList
   - jobs: ALItemizedJobList.using(complete_attribute='complete', ask_number=True)
   - jobs[i].other_income_sources: ALIncomeList.using(complete_attribute='complete')
@@ -711,7 +711,7 @@ attachments:
           % endfor
           % endfor
       - "total_gross_weekly_income_amount": |
-          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52) + (job.other_income_sources.total(times_per_year=52) for job in jobs), symbol='') }
+          ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52) + sum(job.other_income_sources.total(times_per_year=52) for job in jobs), symbol='') }
       - "exemptions_federal_income_tax": |
           ${ comma_and_list(federal_tax_exemptions.true_values()) }
       - "deductions_federal_income_tax_amount": |
