@@ -199,6 +199,8 @@ fields:
 id: years paid into ss
 question: |
   How many years have you paid into Social Security?
+subquestion: |
+  For most people, this is the year that you first got a job. If you took a break, subtract those years. 
 fields:
   - Years: years_paid_ss
     datatype: integer
