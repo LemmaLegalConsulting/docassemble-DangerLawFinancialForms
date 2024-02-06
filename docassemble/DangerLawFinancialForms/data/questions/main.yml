@@ -17,6 +17,7 @@ metadata:
     - FA-00-00-00-00
   authors:
     - Lemma Legal
+    - Quinten Steenhuis
     - Mia Bonardi
     - Plocket
     - Caroline Robinson
@@ -713,11 +714,11 @@ attachments:
       - "total_gross_weekly_income_amount": |
           ${ currency(jobs.gross_total(times_per_year=52) + other_incomes.total(times_per_year=52) + sum(job.other_income_sources.total(times_per_year=52) for job in jobs), symbol='') }
       - "exemptions_federal_income_tax": |
-          ${ comma_and_list(federal_tax_exemptions.true_values()) }
+          ${ federal_tax_exemptions.true_values()[0] }
       - "deductions_federal_income_tax_amount": |
           ${ currency(jobs.deduction_total(times_per_year=52, source='federal_taxes'), symbol='') }
       - "exemptions_state_income_tax": |
-          ${ comma_and_list(state_tax_exemptions.true_values()) }
+          ${ state_tax_exemptions.true_values()[0] }
       - "deductions_state_income_tax_amount": |
           ${ currency(jobs.deduction_total(times_per_year=52, source='state_taxes'), symbol='') }
       - "deductions_fica_medicare_amount": ${ currency(jobs.deduction_total(times_per_year=52, source='fica_medicare'), symbol='') }
