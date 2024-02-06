@@ -36,7 +36,7 @@ objects:
   - jobs[i].other_income_sources: ALIncomeList.using(complete_attribute='complete')
   - other_income_sources: ALIncomeList.using(complete_attribute='complete')
   - other_incomes: ALIncomeList.using(complete_attribute='complete')
-  - expenses: ALExpenseList.using(complete_attribute='complete')
+  - expenses: ALExpenseList.using(complete_attribute='exists')
   - assets: ALAssetList.using(complete_attribute='complete')
   - all_real_estate: ALAssetList.using(complete_attribute='market_value')
   - motor_vehicles: ALAssetList.using(complete_attribute='market_value')
@@ -756,14 +756,13 @@ attachments:
       - "expense_child_care_amount": ${ currency(expenses.total(times_per_year=52, source='child care'), symbol='') }
       - "expense_food_amount": ${ currency(expenses.total(times_per_year=52, source='food'), symbol='') }
       - "expense_house_supplies_amount": ${ currency(expenses.total(times_per_year=52, source='house supplies'), symbol='') }
-      - "expense_other_amount": ${ currency(expenses.total(times_per_year=52, source='other'), symbol='') }
+      - "expense_other_amount": |
+          ${ currency(expenses.total(times_per_year=52, exclude_source=['rent or mortgage', 'homeowner rental insurance', 'maintenance repair', 'heat', 'electric or gas', 'telephone', 'water sewer', 'food', 'house supplies', 'laudry and cleaing', 'clothes', 'life insurance', 'medical insurance', 'uninsured medicals', 'incidentals and toiletries', 'motor vehicle expenses', 'motor vehicle payment', 'child care']), symbol='') }
       - "expense_others_amount": ${ currency(0.00, symbol='') }
       - "expense_laundry_cleaning_amount": ${ currency(expenses.total(times_per_year=52, source='laudry and cleaing'), symbol='') }
       - "expenses_other_explanation": |
-          % for expense in expenses:
-          % if expense.source == "other":
+          % for expense in expenses.matches(exclude_source=['rent or mortgage', 'homeowner rental insurance', 'maintenance repair', 'heat', 'electric or gas', 'telephone', 'water sewer', 'food', 'house supplies', 'laudry and cleaing', 'clothes', 'life insurance', 'medical insurance', 'uninsured medicals', 'incidentals and toiletries', 'motor vehicle expenses', 'motor vehicle payment', 'child care']):
           ${ expense.display_name }
-          % endif
           % endfor
       - "expense_clothing_amount": ${ currency(expenses.total(times_per_year=52, source='clothes'), symbol='') }
       - "total_weekly_expenses_amount": ${ currency(expenses.total(times_per_year=52), symbol='') }
