@@ -343,13 +343,13 @@ data: !!omap
   - laudry and cleaing: "Laundry and Cleaning"
   - clothes: "Clothing"
   - life insurance: "Life Insurance"
-  -	medical insurance: "Medical Insurance"
-  -	uninsured medicals: "Uninsured Medicals"
-  -	incidentals and toiletries: "Incidentals and Toiletries"
-  -	motor vehicle expenses: "Motor Vehicle Expenses"
-  -	motor vehicle payment: "Motor Vehicle Payment"
-  -	child care: "Child Care"
-  -	other: "Other"
+  - medical insurance: "Medical Insurance"
+  - uninsured medicals: "Uninsured Medicals"
+  - incidentals and toiletries: "Incidentals and Toiletries"
+  - motor vehicle expenses: "Motor Vehicle Expenses"
+  - motor vehicle payment: "Motor Vehicle Payment"
+  - child care: "Child Care"
+  - other: "Other"
 ---
 generic object: ALExpenseList
 continue button field: expenses.revisit
